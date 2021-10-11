@@ -20,21 +20,20 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="1. 哈希环   一致性哈希采用的是哈希环，在redis集群中，通过crc16算法，行程的哈希槽，有2的14次方个。其实redis所使用的算法与一致性哈希类似，但是一致性哈希会出现数据倾斜问题。通过虚拟节点来让平均，防止某一个节点压力太大，而另外一台机器比较空闲。而哈希槽则避免了这一问题。">
+  <meta name="description" content="1 两数之和​    经典力扣第一题，求两数之和。给定一个整形数组，并给定一个target值，判断在数组中是否存在两个元素，它们的和等于给定的target值，并返回这两个数组的下标。 ​    例：  12输入: nums &#x3D; [2, 7, 11, 15], target &#x3D; 9输出: indexes &#x3D; [0, 1]   #### 1.1 暴力解法  ​    用双重循环来遍历数组，取出一个数组">
 <meta property="og:type" content="article">
-<meta property="og:title" content="一致性哈希">
-<meta property="og:url" content="http://example.com/2021/09/29/%E4%B8%80%E8%87%B4%E6%80%A7%E5%93%88%E5%B8%8C/index.html">
+<meta property="og:title" content="leetcode01">
+<meta property="og:url" content="http://example.com/2021/03/11/leetcode01/index.html">
 <meta property="og:site_name" content="swaggyW&#39;s Blog">
-<meta property="og:description" content="1. 哈希环   一致性哈希采用的是哈希环，在redis集群中，通过crc16算法，行程的哈希槽，有2的14次方个。其实redis所使用的算法与一致性哈希类似，但是一致性哈希会出现数据倾斜问题。通过虚拟节点来让平均，防止某一个节点压力太大，而另外一台机器比较空闲。而哈希槽则避免了这一问题。">
+<meta property="og:description" content="1 两数之和​    经典力扣第一题，求两数之和。给定一个整形数组，并给定一个target值，判断在数组中是否存在两个元素，它们的和等于给定的target值，并返回这两个数组的下标。 ​    例：  12输入: nums &#x3D; [2, 7, 11, 15], target &#x3D; 9输出: indexes &#x3D; [0, 1]   #### 1.1 暴力解法  ​    用双重循环来遍历数组，取出一个数组">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2021-09-29T05:21:19.000Z">
-<meta property="article:modified_time" content="2021-10-09T02:22:04.341Z">
+<meta property="article:published_time" content="2021-03-11T02:48:19.000Z">
+<meta property="article:modified_time" content="2021-10-11T03:20:49.318Z">
 <meta property="article:author" content="swaggyW">
-<meta property="article:tag" content="redis">
-<meta property="article:tag" content="hash">
+<meta property="article:tag" content="leetcode">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://example.com/2021/09/29/%E4%B8%80%E8%87%B4%E6%80%A7%E5%93%88%E5%B8%8C/">
+<link rel="canonical" href="http://example.com/2021/03/11/leetcode01/">
 
 
 <script id="page-configurations">
@@ -47,7 +46,7 @@
   };
 </script>
 
-  <title>一致性哈希 | swaggyW's Blog</title>
+  <title>leetcode01 | swaggyW's Blog</title>
   
 
 
@@ -169,7 +168,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/09/29/%E4%B8%80%E8%87%B4%E6%80%A7%E5%93%88%E5%B8%8C/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/11/leetcode01/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
@@ -182,7 +181,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          一致性哈希
+          leetcode01
         </h1>
 
         <div class="post-meta">
@@ -192,14 +191,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-09-29 13:21:19" itemprop="dateCreated datePublished" datetime="2021-09-29T13:21:19+08:00">2021-09-29</time>
+              <time title="创建时间：2021-03-11 10:48:19" itemprop="dateCreated datePublished" datetime="2021-03-11T10:48:19+08:00">2021-03-11</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-10-09 10:22:04" itemprop="dateModified" datetime="2021-10-09T10:22:04+08:00">2021-10-09</time>
+                <time title="修改时间：2021-10-11 11:20:49" itemprop="dateModified" datetime="2021-10-11T11:20:49+08:00">2021-10-11</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -207,7 +206,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
+                  <a href="/categories/leetcode/" itemprop="url" rel="index"><span itemprop="name">leetcode</span></a>
                 </span>
             </span>
 
@@ -229,8 +228,20 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="1-哈希环"><a href="#1-哈希环" class="headerlink" title="1. 哈希环"></a>1. 哈希环</h2><p>   一致性哈希采用的是哈希环，在redis集群中，通过crc16算法，行程的哈希槽，有2的14次方个。其实redis所使用的算法与一致性哈希类似，但是一致性哈希会出现数据倾斜问题。通过虚拟节点来让平均，防止某一个节点压力太大，而另外一台机器比较空闲。而哈希槽则避免了这一问题。</p>
-<hr>
+        <h3 id="1-两数之和"><a href="#1-两数之和" class="headerlink" title="1 两数之和"></a>1 两数之和</h3><p>​    经典力扣第一题，求两数之和。给定一个整形数组，并给定一个target值，判断在数组中是否存在两个元素，它们的和等于给定的target值，并返回这两个数组的下标。</p>
+<p>​    例： </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入: nums = [2, 7, 11, 15], target = 9</span><br><span class="line">输出: indexes = [0, 1] </span><br></pre></td></tr></table></figure>
+
+<pre><code>#### 1.1 暴力解法
+</code></pre>
+<p>​    用双重循环来遍历数组，取出一个数组元素，并与后面的每一个元素进行相加然后比较是否与target相等，如果相等则直接返回当前元素的下标，否则返回null。 看代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span>[] twoSum(<span class="keyword">int</span> target, <span class="keyword">int</span>[] nums) &#123;</span><br><span class="line">        <span class="comment">//存放返回数组的下标</span></span><br><span class="line">        <span class="keyword">int</span>[] indexes = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">2</span>];</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nums.length - <span class="number">1</span>; i++) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> j = i + <span class="number">1</span>; j &lt; nums.length; j++) &#123;</span><br><span class="line">                <span class="keyword">if</span> (nums[i] + nums[j] == target) &#123;</span><br><span class="line">                    indexes[<span class="number">0</span>] = i;</span><br><span class="line">                    indexes[<span class="number">1</span>] = j;</span><br><span class="line">                    <span class="keyword">return</span> indexes;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    上面算法可以达到题目要求，但是时间复杂度比较高，两层循环，时间复杂度为O(n^2)。可以优化</p>
+<h4 id="1-2-使用map"><a href="#1-2-使用map" class="headerlink" title="1.2 使用map"></a>1.2 使用map</h4><p>​    使用一个map来存放数据，for循环遍历数组，并判断当前遍历的元素，target-当前元素的值，是否存在在map中，如果存在，说明找到了两个数相加 == target。如果不存在，就放入map中</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span>[] twoSum(<span class="keyword">int</span> target, <span class="keyword">int</span>[] nums) &#123;</span><br><span class="line">        Map&lt;Integer, Integer&gt; map = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nums.length; i++) &#123;</span><br><span class="line">            <span class="keyword">int</span> num = target - nums[i];</span><br><span class="line">            <span class="keyword">if</span> (map.containsKey(num)) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">new</span> <span class="keyword">int</span>[] &#123;map.get(num), i&#125;;</span><br><span class="line">            &#125;</span><br><span class="line">            map.put(nums[i], i);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    通过一个map就可以做到，从而时间复杂度降低到O（n）。</p>
 
     </div>
 
@@ -252,8 +263,7 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/redis/" rel="tag"># redis</a>
-              <a href="/tags/hash/" rel="tag"># hash</a>
+              <a href="/tags/leetcode/" rel="tag"># leetcode</a>
           </div>
 
         
@@ -261,13 +271,10 @@
 
         
     <div class="post-nav">
+      <div class="post-nav-item"></div>
       <div class="post-nav-item">
-    <a href="/2021/07/09/redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/" rel="prev" title="redis分布式锁">
-      <i class="fa fa-chevron-left"></i> redis分布式锁
-    </a></div>
-      <div class="post-nav-item">
-    <a href="/2021/09/30/redis%E4%BA%94%E5%A4%A7%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/" rel="next" title="redis五大数据类型">
-      redis五大数据类型 <i class="fa fa-chevron-right"></i>
+    <a href="/2021/05/12/leetcode02/" rel="next" title="leetcode02">
+      leetcode02 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -327,7 +334,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%93%88%E5%B8%8C%E7%8E%AF"><span class="nav-text">1. 哈希环</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E4%B8%A4%E6%95%B0%E4%B9%8B%E5%92%8C"><span class="nav-text">1 两数之和</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-%E4%BD%BF%E7%94%A8map"><span class="nav-text">1.2 使用map</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 

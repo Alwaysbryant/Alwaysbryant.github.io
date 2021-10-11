@@ -794,6 +794,277 @@
   
   
 
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/05/14/leetcode03/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
+      <meta itemprop="name" content="swaggyW">
+      <meta itemprop="description" content="永远不要放弃">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="swaggyW's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/05/14/leetcode03/" class="post-title-link" itemprop="url">leetcode03</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-05-14 11:58:49" itemprop="dateCreated datePublished" datetime="2021-05-14T11:58:49+08:00">2021-05-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-10-11 13:12:44" itemprop="dateModified" datetime="2021-10-11T13:12:44+08:00">2021-10-11</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/leetcode/" itemprop="url" rel="index"><span itemprop="name">leetcode</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="无重复字符的最长子串"><a href="#无重复字符的最长子串" class="headerlink" title="无重复字符的最长子串"></a>无重复字符的最长子串</h3><p>​    给定一个字符串，找出其中不含有重复字符的最长的子串。并返回其长度。</p>
+<p>​    例： </p>
+<p>​         输入的是: String s = “abcabcbb”</p>
+<p>​          则最长子串是 “abc” 输出3</p>
+<hr>
+<p>​    双指针，一个指针标记起始位置，一个指针标记结束位置。</p>
+<p>​    对于例子来说，假设标记起始位置的指针是 start，遍历字符串，并确定start的值，最开始为0，将字符串中每个字符的下标记录下来，因为在确定start的值时，有可能这个字符出现过，如果出现过，则让start从上一次出现的下一个的位置，开始进行扫描，并且每一次循环，都可以得到当前的子串长度为 i-start+1。</p>
+<p>​    整个遍历过程中，我们如何得到最大长度，假设最终长度是res， 只需要取出当前循环得到的长度和原先长度中的最大值就可以了。如何记录字符串元素的下标。我们知道字符在java内存是通过ASCII的方式，以整型来进行存储的。</p>
+<p>根据ASCII对照表，选择一个int数组，大小为128就可以了。</p>
+<p>可能说的不是很清楚，记录下代码，避免忘记。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">lengthOfLongestSubstrinh</span><span class="params">(String s)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//非空判断</span></span><br><span class="line">        <span class="keyword">if</span> (s == <span class="keyword">null</span> || s.length() == <span class="number">0</span>) <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">        <span class="comment">//创建一个int数组记录每个元素上一次出现的位置</span></span><br><span class="line">        <span class="keyword">int</span>[] last = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">128</span>];</span><br><span class="line">        <span class="comment">//初始化这个数组，让所有的元素值都为-1</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; last.length; i++) &#123;</span><br><span class="line">            last[i] = -<span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">//记录最大长度</span></span><br><span class="line">        <span class="keyword">int</span> result = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">//起始位置</span></span><br><span class="line">        <span class="keyword">int</span> start = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">//得到字符串的长度</span></span><br><span class="line">        <span class="keyword">int</span> length = s.length();</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; length; i++) &#123;</span><br><span class="line">            <span class="comment">//取出字符</span></span><br><span class="line">            <span class="keyword">int</span> index = s.charAt(i);</span><br><span class="line">            start = Math.max(start, last[index] + <span class="number">1</span>); <span class="comment">//如果字符出现过，就从下一个作为起始位置</span></span><br><span class="line">            result = Math.max(result, i - start + <span class="number">1</span>); <span class="comment">//得到最大长度</span></span><br><span class="line">            last[index] = i; <span class="comment">//记录每一个字符的下标</span></span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>对滑动窗口的理解不是很清晰。。。继续努力！</p>
+<p>​    其实leetcode官方给出的解答还是比较清晰的，使用一个set集合来记录字符。 滑动窗口，通过两个指针，左指针标记起始位置，右指针进行滑动，当下标不越界并且在集合中没有当前字符时，不断地往set集合中加入元素，而字符出现过后， 则退出循环，让左指针指向下一个元素，并且将前一个字符删掉，然后再进行循环，最后得到最大长度。</p>
+<p>​    搬运一下官方代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">lengthOfLongestSubstring</span><span class="params">(String s)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 哈希集合，记录每个字符是否出现过</span></span><br><span class="line">        Set&lt;Character&gt; occ = <span class="keyword">new</span> HashSet&lt;Character&gt;();</span><br><span class="line">        <span class="keyword">int</span> n = s.length();</span><br><span class="line">        <span class="comment">// 右指针，初始值为 -1，相当于我们在字符串的左边界的左侧，还没有开始移动</span></span><br><span class="line">        <span class="keyword">int</span> rk = -<span class="number">1</span>, ans = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; n; ++i) &#123;</span><br><span class="line">            <span class="keyword">if</span> (i != <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="comment">// 左指针向右移动一格，移除一个字符</span></span><br><span class="line">                occ.remove(s.charAt(i - <span class="number">1</span>));</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">while</span> (rk + <span class="number">1</span> &lt; n &amp;&amp; !occ.contains(s.charAt(rk + <span class="number">1</span>))) &#123;</span><br><span class="line">                <span class="comment">// 不断地移动右指针</span></span><br><span class="line">                occ.add(s.charAt(rk + <span class="number">1</span>));</span><br><span class="line">                ++rk;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 第 i 到 rk 个字符是一个极长的无重复字符子串</span></span><br><span class="line">            ans = Math.max(ans, rk - i + <span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">作者：LeetCode-Solution</span><br><span class="line">链接：https:<span class="comment">//leetcode-cn.com/problems/longest-substring-without-repeating-characters/solution/wu-zhong-fu-zi-fu-de-zui-chang-zi-chuan-by-leetc-2/</span></span><br><span class="line">来源：力扣（LeetCode）</span><br><span class="line">著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/05/12/leetcode02/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
+      <meta itemprop="name" content="swaggyW">
+      <meta itemprop="description" content="永远不要放弃">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="swaggyW's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/05/12/leetcode02/" class="post-title-link" itemprop="url">leetcode02</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-05-12 11:21:17" itemprop="dateCreated datePublished" datetime="2021-05-12T11:21:17+08:00">2021-05-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-10-11 11:57:58" itemprop="dateModified" datetime="2021-10-11T11:57:58+08:00">2021-10-11</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/leetcode/" itemprop="url" rel="index"><span itemprop="name">leetcode</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="链表相加"><a href="#链表相加" class="headerlink" title="链表相加"></a>链表相加</h3><p>​    题目： 给定两个非空链表，存放的数据都是非负整数，并且都是按照逆序的方式进行存储，要求把这两个数字相加，并返回同样的链表。</p>
+<p>​    LeetCode的题目描述都令人头大。直接写个例子。</p>
+<p>​    假设有两个链表：</p>
+<p>​    链表1：  2 —-&gt;&gt;&gt;&gt;  4 —-&gt;&gt;&gt;&gt; 3</p>
+<p>​    链表2：  5 —-&gt;&gt;&gt;&gt;  6 —-&gt;&gt;&gt;&gt; 4</p>
+<p>由于是逆序的，所以数字是 342和465 </p>
+<p>相加得到 342+465=807 </p>
+<p>所以返回的链表是 ：  7  —-&gt;&gt;&gt;&gt; 0  —-&gt;&gt;&gt;&gt; 8</p>
+<hr>
+<p>​    两个个位数相加，如果大于10 ，需要进1。。 所以，设置一个溢出位，如果遍历到的当前节点相加大于10， 则设置溢出位的值为1，在下一个节点相加之前，加上这个值。在计算这个溢出位时，可以直接通过sum/10 来计算， 因为，如果sum = num1 + num2 + carry(溢出位) 大于10， 则需要进1， 否则为 0.</p>
+<hr>
+<p>代码 </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Definition for singly-linked list.</span></span><br><span class="line"><span class="comment"> * public class ListNode &#123;</span></span><br><span class="line"><span class="comment"> *     int val;</span></span><br><span class="line"><span class="comment"> *     ListNode next;</span></span><br><span class="line"><span class="comment"> *     ListNode() &#123;&#125;</span></span><br><span class="line"><span class="comment"> *     ListNode(int val) &#123; this.val = val; &#125;</span></span><br><span class="line"><span class="comment"> *     ListNode(int val, ListNode next) &#123; this.val = val; this.next = next; &#125;</span></span><br><span class="line"><span class="comment"> * &#125;</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> ListNode <span class="title">addTwoNumbers</span><span class="params">(ListNode l1, ListNode l2)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//创建一个新的头结点</span></span><br><span class="line">        ListNode l3 = <span class="keyword">new</span> ListNode();</span><br><span class="line">        <span class="comment">//创建指针</span></span><br><span class="line">        ListNode cursor = l3;</span><br><span class="line">        <span class="comment">//初始化溢出位的值</span></span><br><span class="line">        <span class="keyword">int</span> carry = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">//遍历两个链表</span></span><br><span class="line">        <span class="keyword">while</span> (l1 != <span class="keyword">null</span> || l2 != <span class="keyword">null</span> || carry != <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="comment">//carry ！= 0 是为了防止最后一位数字大于10，需要进1</span></span><br><span class="line">            <span class="keyword">int</span> num1 = ( l1 == <span class="keyword">null</span> ) ? <span class="number">0</span> : l1.val;</span><br><span class="line">            <span class="keyword">int</span> num2 = ( l2 == <span class="keyword">null</span> ) ? <span class="number">0</span> : l2.val;</span><br><span class="line">            <span class="comment">//计算和</span></span><br><span class="line">            <span class="keyword">int</span> sum = num1 + num2 + carry;</span><br><span class="line">            <span class="comment">//得到溢出位的值</span></span><br><span class="line">            carry = sum /<span class="number">10</span>;</span><br><span class="line">            <span class="comment">//创建一个新的节点挂到l3的后面，sum % 10 有可能得到的sum是大于10的</span></span><br><span class="line">            ListNode newNode = <span class="keyword">new</span> ListNode(sum % <span class="number">10</span>);</span><br><span class="line">            cursor.next = newNode;</span><br><span class="line">            <span class="comment">//指针后移</span></span><br><span class="line">            cursor = cursor.next;</span><br><span class="line">            </span><br><span class="line">            <span class="comment">//l1,l2后移</span></span><br><span class="line">            <span class="keyword">if</span> (l1.next != <span class="keyword">null</span>) l1 = l1.next;</span><br><span class="line">            <span class="keyword">if</span> (l2.next != <span class="keyword">null</span>) l2 = l2.next;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">//将结果返回</span></span><br><span class="line">        <span class="keyword">return</span> l3.next;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    验证一下,手动创建两个链表</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//创建l1</span></span><br><span class="line">		ListNode l1 = <span class="keyword">new</span> ListNode(<span class="number">2</span>);</span><br><span class="line">        ListNode listNode1 = <span class="keyword">new</span> ListNode(<span class="number">4</span>);</span><br><span class="line">        ListNode listNode2 = <span class="keyword">new</span> ListNode(<span class="number">3</span>);</span><br><span class="line">        l1.next = listNode1;</span><br><span class="line">        listNode1.next = listNode2;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//创建l2</span></span><br><span class="line">        ListNode l2 = <span class="keyword">new</span> ListNode(<span class="number">5</span>);</span><br><span class="line">        ListNode listNode4 = <span class="keyword">new</span> ListNode(<span class="number">6</span>);</span><br><span class="line">        ListNode listNode5 = <span class="keyword">new</span> ListNode(<span class="number">4</span>);</span><br><span class="line">        l2.next = listNode4;</span><br><span class="line">        listNode4.next = listNode5;</span><br><span class="line"></span><br><span class="line">        ListNode l3 = addNumbers(l1, l2);</span><br><span class="line">        ListNode cursor = l3;</span><br><span class="line">        <span class="keyword">while</span> (cursor != <span class="keyword">null</span>)&#123;</span><br><span class="line">            System.out.println(cursor.val);</span><br><span class="line">            cursor = cursor.next;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出结果如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">输出结果：  7\n 0\n 8</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/11/leetcode01/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
+      <meta itemprop="name" content="swaggyW">
+      <meta itemprop="description" content="永远不要放弃">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="swaggyW's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/03/11/leetcode01/" class="post-title-link" itemprop="url">leetcode01</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-11 10:48:19" itemprop="dateCreated datePublished" datetime="2021-03-11T10:48:19+08:00">2021-03-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-10-11 11:20:49" itemprop="dateModified" datetime="2021-10-11T11:20:49+08:00">2021-10-11</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/leetcode/" itemprop="url" rel="index"><span itemprop="name">leetcode</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="1-两数之和"><a href="#1-两数之和" class="headerlink" title="1 两数之和"></a>1 两数之和</h3><p>​    经典力扣第一题，求两数之和。给定一个整形数组，并给定一个target值，判断在数组中是否存在两个元素，它们的和等于给定的target值，并返回这两个数组的下标。</p>
+<p>​    例： </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入: nums = [2, 7, 11, 15], target = 9</span><br><span class="line">输出: indexes = [0, 1] </span><br></pre></td></tr></table></figure>
+
+<pre><code>#### 1.1 暴力解法
+</code></pre>
+<p>​    用双重循环来遍历数组，取出一个数组元素，并与后面的每一个元素进行相加然后比较是否与target相等，如果相等则直接返回当前元素的下标，否则返回null。 看代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span>[] twoSum(<span class="keyword">int</span> target, <span class="keyword">int</span>[] nums) &#123;</span><br><span class="line">        <span class="comment">//存放返回数组的下标</span></span><br><span class="line">        <span class="keyword">int</span>[] indexes = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">2</span>];</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nums.length - <span class="number">1</span>; i++) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> j = i + <span class="number">1</span>; j &lt; nums.length; j++) &#123;</span><br><span class="line">                <span class="keyword">if</span> (nums[i] + nums[j] == target) &#123;</span><br><span class="line">                    indexes[<span class="number">0</span>] = i;</span><br><span class="line">                    indexes[<span class="number">1</span>] = j;</span><br><span class="line">                    <span class="keyword">return</span> indexes;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    上面算法可以达到题目要求，但是时间复杂度比较高，两层循环，时间复杂度为O(n^2)。可以优化</p>
+<h4 id="1-2-使用map"><a href="#1-2-使用map" class="headerlink" title="1.2 使用map"></a>1.2 使用map</h4><p>​    使用一个map来存放数据，for循环遍历数组，并判断当前遍历的元素，target-当前元素的值，是否存在在map中，如果存在，说明找到了两个数相加 == target。如果不存在，就放入map中</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span>[] twoSum(<span class="keyword">int</span> target, <span class="keyword">int</span>[] nums) &#123;</span><br><span class="line">        Map&lt;Integer, Integer&gt; map = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nums.length; i++) &#123;</span><br><span class="line">            <span class="keyword">int</span> num = target - nums[i];</span><br><span class="line">            <span class="keyword">if</span> (map.containsKey(num)) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">new</span> <span class="keyword">int</span>[] &#123;map.get(num), i&#125;;</span><br><span class="line">            &#125;</span><br><span class="line">            map.put(nums[i], i);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    通过一个map就可以做到，从而时间复杂度降低到O（n）。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
 
   
 
@@ -862,20 +1133,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-count">9</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-count">3</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">4</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
