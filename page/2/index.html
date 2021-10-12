@@ -164,6 +164,268 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/04/15/%E5%A0%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
+      <meta itemprop="name" content="swaggyW">
+      <meta itemprop="description" content="永远不要放弃">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="swaggyW's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/04/15/%E5%A0%86/" class="post-title-link" itemprop="url">堆</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-04-15 17:36:48" itemprop="dateCreated datePublished" datetime="2021-04-15T17:36:48+08:00">2021-04-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-10-12 18:39:58" itemprop="dateModified" datetime="2021-10-12T18:39:58+08:00">2021-10-12</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>​    主要记录一下，堆内存的结构，以及垃圾回收。</p>
+<p>​    堆由于存放的是对象实例，对象主要是存放数据，所以当一个对象没有使用、或者没有引用指向它时，它就有可能会被垃圾回收器回收。</p>
+<p>​    在jdk1.8之后，堆区主要有三个区域，新生代、老年代、元空间。</p>
+<p>​    新生代包括Eden区(伊甸园区)、 survivor0区（from区）、survivor1区（to区）。</p>
+<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/jvm/gc.PNG" alt="gc"></p>
+<p>ps:  元空间在jdk1.7之前叫做永久代，元空间中主要存放的是java自带的类信息，如rt.jar包下的类，常用的集合框架等等…</p>
+<p>​    因此，垃圾回收主要发生在前面两个区域。首先要说明的有两点：</p>
+<ol>
+<li>对于大部分对象，当它被创建并且在堆中分配内存时，这个对象都是在伊甸园区（后面都说新生代）；</li>
+<li> 对于大对象会直接进入老年代。像字符串、数组等。这样是为了防止对象复制而降低效率。</li>
+</ol>
+<h5 id="gc"><a href="#gc" class="headerlink" title="gc"></a>gc</h5><p>  大部分的对象使用完毕之后就会被回收，因此在新生代发生gc是十分频繁的。当新生代满了之后，就会发生一次young gc，一次ygc过后，存活下来的对象会被复制进入from区，当新生代发生第二次ygc后，所有存活下来的对象将会被复制到to区，此时，from区会清空，而from区和to区会角色互换。即两者的名字会交换。就是要保证to区是空的。当进入一次幸存者区时，这些对象的年龄就会+1，而当一个对象的年龄达到15岁时，就会进入老年代。</p>
+<p>​    老年代发生gc的次数不像新生代那么频繁。 这是因为老年代的空间大小是新生代的2倍，所以速度也会慢8-10倍。</p>
+<h5 id="gc算法"><a href="#gc算法" class="headerlink" title="gc算法"></a>gc算法</h5><p>​    目前jvm采用的是分代收集算法，根据不同的区域，来使用合适的算法。</p>
+<p>​     复制算法： 新生代使用的算法，所以有from和to两块大小完全一样的空间，使用这种算法是因为在新生代，一次gc可能有90%的对象会被回收。并且不会产生内存碎片，但是会需要两块空间，所以相对来说耗内存。</p>
+<p>​    标记清除算法： 老年代使用，先对需要回收的对象进行标记，然后在进行删除，因为老年代中的对象大部分都不会被回收，所以使用复制算法显然行不通，但是这种算法，需要对内存区域进行两次扫描，所以效率会比较低，并且会产生内存碎片。</p>
+<p>   标记整理： 和标记清除一样，先标记要回收的对象，然后将存活对象往一端移动，然后清除边界外的内存。</p>
+<h5 id="判断对象死亡"><a href="#判断对象死亡" class="headerlink" title="判断对象死亡"></a>判断对象死亡</h5><p>​    可以采用引用计数法来判断对象死亡，给对象添加一个计数器，当有一个引用指向这个对象的时候，就+1，当引用失效时，就-1，当计数器为0时，说明没有任何引用指向该对象。则宣告对象死亡。需要被jvm回收。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/04/15/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
+      <meta itemprop="name" content="swaggyW">
+      <meta itemprop="description" content="永远不要放弃">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="swaggyW's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/04/15/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" class="post-title-link" itemprop="url">Java内存模型</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-04-15 12:49:47" itemprop="dateCreated datePublished" datetime="2021-04-15T12:49:47+08:00">2021-04-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-10-12 16:32:25" itemprop="dateModified" datetime="2021-10-12T16:32:25+08:00">2021-10-12</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>​    Java内存模型，所有的变量都存储在主内存中，而线程拿到的变量都是从主内存中拷贝的副本。线程对所有变量的操作都是在本地内存进行，而不能直接读取主内存。</p>
+<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/jvm/JMM.PNG" alt="JMM"></p>
+<p>​    多个线程访问同一个变量，并且复制到自己的本地内存对变量进行操作，很有可能两个线程使用的数据不一致，要解决这个问题，我们可以把共享变量用关键字volatile来修饰，来保证线程每次读取都是从主内存中读取数据。</p>
+<h5 id="volatile"><a href="#volatile" class="headerlink" title="volatile"></a>volatile</h5><p>​    并发编程的三个重要特性： 原子性、可见性、有序性。</p>
+<p>​    原子性： 一个操作或者一系列操作，要么都成功，要么都失败，所有的操作都是一个整体，要么都执行、要么都不执行。synchronized关键字就可以保证原子性。</p>
+<p>​    可见性： 一个线程对共享变量进行修改，其他线程必须能够得到最新的值。即volatile关键字可保证可见性。</p>
+<p>​    顺序性： 编译器会优化代码，书写的代码可能和执行的代码顺序不一样，所以要保证程序的顺序，可用volatile来防止指令重排。</p>
+<h5 id="synchronized-和-volatile"><a href="#synchronized-和-volatile" class="headerlink" title="synchronized 和 volatile"></a>synchronized 和 volatile</h5><p>​    synchronized保证线程同步，可以修饰类，方法，代码块，修饰类和静态方法则是给类上锁，修饰方法可以给对象上锁，修饰代码块可以指定加锁对象，可以是一个变量、对象，也可以是一个类。而volatile更加轻量级，只能修饰变量。</p>
+<p>​    volatile只能保证数据的可见性，而不能保证原子性。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/30/java%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
+      <meta itemprop="name" content="swaggyW">
+      <meta itemprop="description" content="永远不要放弃">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="swaggyW's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/03/30/java%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84/" class="post-title-link" itemprop="url">java内存结构</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-30 16:34:59" itemprop="dateCreated datePublished" datetime="2021-03-30T16:34:59+08:00">2021-03-30</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-10-12 17:35:53" itemprop="dateModified" datetime="2021-10-12T17:35:53+08:00">2021-10-12</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h4 id="java内存结构"><a href="#java内存结构" class="headerlink" title="java内存结构"></a>java内存结构</h4><p>​    了解java的内存结构，能够更好地理解程序的调用，内存结构主要有： 栈、堆、方法区、程序计数器。可以看图。比较简陋，看懂就行</p>
+<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/jvm/JAVA%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84.PNG" alt="java"></p>
+<pre><code>##### 虚拟机栈
+</code></pre>
+<p>​    虚拟机栈，存放方法中的局部变量、方法的出口和入口等，我们程序从主方法进入会开辟一个栈，里面存放程序的局部变量等等，当主方法又调用另外一个方法时，会重新在栈空间中开辟一块新的栈。。。</p>
+<p>​    当调用一个方法时，叫做入栈，而当方法调用完之后，会出栈，从而开辟的那块栈空间会被销毁。</p>
+<p>​    例如下面这个程序</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> a = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">int</span> b = <span class="number">2</span>;</span><br><span class="line">        Test t = <span class="keyword">new</span> Test();</span><br><span class="line">        <span class="keyword">int</span> sum = t.add(a,b);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> a + b;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当启动程序时，会开辟一块主方法的栈，而当执行到add方法时，会在开辟一块区域。而执行完毕之后会销毁，最后直至程序结束</p>
+<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/jvm/stack.PNG" alt="stack"></p>
+<p>在栈空间，会出现栈溢出（StackOverflowError），即栈空间被耗尽，会出现异常。当写一个递归程序没有规定出口，就会不停的开辟新栈，最后就会导致栈溢出。</p>
+<h5 id="本地方法栈"><a href="#本地方法栈" class="headerlink" title="本地方法栈"></a>本地方法栈</h5><p>​    是java调用native方法所开辟的栈空间。为native所服务。</p>
+<h5 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h5><p>​    程序计数器是每个线程私有的，程序计数器保证程序的执行流程，当线程切换时，程序计数器可以保证程序能恢复到正确的执行位置。</p>
+<h5 id="堆"><a href="#堆" class="headerlink" title="堆"></a>堆</h5><p>​    堆是整个内存结构中，分配空间最大的一部分，堆空间主要是存放对象实例，几乎所有的对象实例、数组都在堆中分配内存。堆也是垃圾回收的主要区域。当堆内存满了以后，会出现OutOfMemoryError异常。表示堆内存满了。</p>
+<h5 id="方法区"><a href="#方法区" class="headerlink" title="方法区"></a>方法区</h5><p>​    方法区，主要是用来存储类的加载信息，静态方法，字符串常量池也属于方法区，方法区好像在元空间中，这个概念一直都很模糊。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/11/leetcode01/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -232,6 +494,338 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span>[] twoSum(<span class="keyword">int</span> target, <span class="keyword">int</span>[] nums) &#123;</span><br><span class="line">        Map&lt;Integer, Integer&gt; map = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nums.length; i++) &#123;</span><br><span class="line">            <span class="keyword">int</span> num = target - nums[i];</span><br><span class="line">            <span class="keyword">if</span> (map.containsKey(num)) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">new</span> <span class="keyword">int</span>[] &#123;map.get(num), i&#125;;</span><br><span class="line">            &#125;</span><br><span class="line">            map.put(nums[i], i);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>​    通过一个map就可以做到，从而时间复杂度降低到O（n）。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/12/life01/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
+      <meta itemprop="name" content="swaggyW">
+      <meta itemprop="description" content="永远不要放弃">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="swaggyW's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/01/12/life01/" class="post-title-link" itemprop="url">life01</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-01-12 22:18:00" itemprop="dateCreated datePublished" datetime="2021-01-12T22:18:00+08:00">2021-01-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-10-12 22:21:06" itemprop="dateModified" datetime="2021-10-12T22:21:06+08:00">2021-10-12</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%8C%AB/" itemprop="url" rel="index"><span itemprop="name">猫</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>舒芙蕾和妈妈一起去医院洗澡。。</p>
+<p>果然是母女俩。。</p>
+<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/cat/twocats.jpg" alt="cat"></p>
+<hr>
+<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/cat/twocats1.jpg" alt="cat"></p>
+<hr>
+<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/cat/twocats2.jpg" alt="cat"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/09/18/life/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
+      <meta itemprop="name" content="swaggyW">
+      <meta itemprop="description" content="永远不要放弃">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="swaggyW's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/09/18/life/" class="post-title-link" itemprop="url">life</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-09-18 22:11:03" itemprop="dateCreated datePublished" datetime="2020-09-18T22:11:03+08:00">2020-09-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-10-12 22:17:38" itemprop="dateModified" datetime="2021-10-12T22:17:38+08:00">2021-10-12</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%8C%AB/" itemprop="url" rel="index"><span itemprop="name">猫</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>今天周末，在巷子里面发现了一只在觅食的橘猫。很小很小，本来已经回去了，最后还是下定决心把他带回去。</p>
+<p>​    最后还是找到了它，才两个月不到大，是一只异瞳猫。。。第二天带她去医院。。。</p>
+<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/cat/IMG_0016.JPG" alt="cat"></p>
+<p>太瘦弱了，连做检查抽血都抽不出来。。。</p>
+<hr>
+<p>一个多星期以后。。。太小了，在外面吃了不干净的东西。。</p>
+<p>已经恢复不过来了。。</p>
+<p>给他取名叫做 柴富富。。。</p>
+<p>富富回喵星了。。。。</p>
+<p>希望来生，它可以做一只被人疼爱的猫，不用担心吃喝。。。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/08/15/cat/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
+      <meta itemprop="name" content="swaggyW">
+      <meta itemprop="description" content="永远不要放弃">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="swaggyW's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/08/15/cat/" class="post-title-link" itemprop="url">cat</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-08-15 21:52:15" itemprop="dateCreated datePublished" datetime="2020-08-15T21:52:15+08:00">2020-08-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-10-12 22:10:26" itemprop="dateModified" datetime="2021-10-12T22:10:26+08:00">2021-10-12</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%8C%AB/" itemprop="url" rel="index"><span itemprop="name">猫</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="柴妙妙生了孩子"><a href="#柴妙妙生了孩子" class="headerlink" title="柴妙妙生了孩子"></a>柴妙妙生了孩子</h3><p>​    最后给妙妙配种了，生了一大群猫崽子。其中留下了一只，取名叫做舒芙蕾</p>
+<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/cat/littlesfl.jpg" alt="cat"></p>
+<p>因为疫情原因，还是很担心的， 不能去医院，最后还是都平安。。</p>
+<hr>
+<p>后来舒芙蕾长大了。。。</p>
+<p>两个月。。</p>
+<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/cat/middlesfl.jpg" alt="cat"></p>
+<p>四五个月。。。</p>
+<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/cat/IMG_0009%2820201218-012634%29.JPG" alt="cat"></p>
+<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/cat/IMG_0011%2820210309-113607%29.JPG" alt="cat"></p>
+<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/cat/sfl.jpg" alt="cat"></p>
+<p>后来。。。就长大了，不让他受妈妈当时的苦了，到年龄就绝育了。。。</p>
+<hr>
+<p>在纸箱子里玩逗猫棒</p>
+<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/cat/IMG_0018%2820210309-113607%29.JPG" alt="cat"></p>
+<p>躲在纸袋子里面</p>
+<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/cat/IMG_0626.JPG" alt="cat"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/04/12/cats/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
+      <meta itemprop="name" content="swaggyW">
+      <meta itemprop="description" content="永远不要放弃">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="swaggyW's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/04/12/cats/" class="post-title-link" itemprop="url">cats</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-04-12 18:40:50" itemprop="dateCreated datePublished" datetime="2019-04-12T18:40:50+08:00">2019-04-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-10-12 21:51:27" itemprop="dateModified" datetime="2021-10-12T21:51:27+08:00">2021-10-12</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%8C%AB/" itemprop="url" rel="index"><span itemprop="name">猫</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="我的猫"><a href="#我的猫" class="headerlink" title="我的猫"></a>我的猫</h3><p>​    陪伴了我大三的柴妙妙。那时候才只有五个月大</p>
+<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/cat/IMG_0023.JPG" alt="cat"></p>
+<p>记录可爱的小小的柴妙妙</p>
+<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/cat/IMG_0234.JPG" alt="cat"></p>
+<p>那时候在武汉，住在小小的单间里面，估计也很无聊吧。。。等着人回家，自己晒太阳。</p>
+<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/cat/IMG_0256.JPG" alt="cat"></p>
 
       
     </div>
@@ -318,20 +912,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-count">18</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-count">6</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
