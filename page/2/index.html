@@ -164,6 +164,99 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/05/12/leetcode02/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
+      <meta itemprop="name" content="swaggyW">
+      <meta itemprop="description" content="永远不要放弃">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="swaggyW's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/05/12/leetcode02/" class="post-title-link" itemprop="url">leetcode02</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-05-12 11:21:17" itemprop="dateCreated datePublished" datetime="2021-05-12T11:21:17+08:00">2021-05-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-10-11 11:57:58" itemprop="dateModified" datetime="2021-10-11T11:57:58+08:00">2021-10-11</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/leetcode/" itemprop="url" rel="index"><span itemprop="name">leetcode</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="链表相加"><a href="#链表相加" class="headerlink" title="链表相加"></a>链表相加</h3><p>​    题目： 给定两个非空链表，存放的数据都是非负整数，并且都是按照逆序的方式进行存储，要求把这两个数字相加，并返回同样的链表。</p>
+<p>​    LeetCode的题目描述都令人头大。直接写个例子。</p>
+<p>​    假设有两个链表：</p>
+<p>​    链表1：  2 —-&gt;&gt;&gt;&gt;  4 —-&gt;&gt;&gt;&gt; 3</p>
+<p>​    链表2：  5 —-&gt;&gt;&gt;&gt;  6 —-&gt;&gt;&gt;&gt; 4</p>
+<p>由于是逆序的，所以数字是 342和465 </p>
+<p>相加得到 342+465=807 </p>
+<p>所以返回的链表是 ：  7  —-&gt;&gt;&gt;&gt; 0  —-&gt;&gt;&gt;&gt; 8</p>
+<hr>
+<p>​    两个个位数相加，如果大于10 ，需要进1。。 所以，设置一个溢出位，如果遍历到的当前节点相加大于10， 则设置溢出位的值为1，在下一个节点相加之前，加上这个值。在计算这个溢出位时，可以直接通过sum/10 来计算， 因为，如果sum = num1 + num2 + carry(溢出位) 大于10， 则需要进1， 否则为 0.</p>
+<hr>
+<p>代码 </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Definition for singly-linked list.</span></span><br><span class="line"><span class="comment"> * public class ListNode &#123;</span></span><br><span class="line"><span class="comment"> *     int val;</span></span><br><span class="line"><span class="comment"> *     ListNode next;</span></span><br><span class="line"><span class="comment"> *     ListNode() &#123;&#125;</span></span><br><span class="line"><span class="comment"> *     ListNode(int val) &#123; this.val = val; &#125;</span></span><br><span class="line"><span class="comment"> *     ListNode(int val, ListNode next) &#123; this.val = val; this.next = next; &#125;</span></span><br><span class="line"><span class="comment"> * &#125;</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> ListNode <span class="title">addTwoNumbers</span><span class="params">(ListNode l1, ListNode l2)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//创建一个新的头结点</span></span><br><span class="line">        ListNode l3 = <span class="keyword">new</span> ListNode();</span><br><span class="line">        <span class="comment">//创建指针</span></span><br><span class="line">        ListNode cursor = l3;</span><br><span class="line">        <span class="comment">//初始化溢出位的值</span></span><br><span class="line">        <span class="keyword">int</span> carry = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">//遍历两个链表</span></span><br><span class="line">        <span class="keyword">while</span> (l1 != <span class="keyword">null</span> || l2 != <span class="keyword">null</span> || carry != <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="comment">//carry ！= 0 是为了防止最后一位数字大于10，需要进1</span></span><br><span class="line">            <span class="keyword">int</span> num1 = ( l1 == <span class="keyword">null</span> ) ? <span class="number">0</span> : l1.val;</span><br><span class="line">            <span class="keyword">int</span> num2 = ( l2 == <span class="keyword">null</span> ) ? <span class="number">0</span> : l2.val;</span><br><span class="line">            <span class="comment">//计算和</span></span><br><span class="line">            <span class="keyword">int</span> sum = num1 + num2 + carry;</span><br><span class="line">            <span class="comment">//得到溢出位的值</span></span><br><span class="line">            carry = sum /<span class="number">10</span>;</span><br><span class="line">            <span class="comment">//创建一个新的节点挂到l3的后面，sum % 10 有可能得到的sum是大于10的</span></span><br><span class="line">            ListNode newNode = <span class="keyword">new</span> ListNode(sum % <span class="number">10</span>);</span><br><span class="line">            cursor.next = newNode;</span><br><span class="line">            <span class="comment">//指针后移</span></span><br><span class="line">            cursor = cursor.next;</span><br><span class="line">            </span><br><span class="line">            <span class="comment">//l1,l2后移</span></span><br><span class="line">            <span class="keyword">if</span> (l1.next != <span class="keyword">null</span>) l1 = l1.next;</span><br><span class="line">            <span class="keyword">if</span> (l2.next != <span class="keyword">null</span>) l2 = l2.next;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">//将结果返回</span></span><br><span class="line">        <span class="keyword">return</span> l3.next;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    验证一下,手动创建两个链表</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//创建l1</span></span><br><span class="line">		ListNode l1 = <span class="keyword">new</span> ListNode(<span class="number">2</span>);</span><br><span class="line">        ListNode listNode1 = <span class="keyword">new</span> ListNode(<span class="number">4</span>);</span><br><span class="line">        ListNode listNode2 = <span class="keyword">new</span> ListNode(<span class="number">3</span>);</span><br><span class="line">        l1.next = listNode1;</span><br><span class="line">        listNode1.next = listNode2;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//创建l2</span></span><br><span class="line">        ListNode l2 = <span class="keyword">new</span> ListNode(<span class="number">5</span>);</span><br><span class="line">        ListNode listNode4 = <span class="keyword">new</span> ListNode(<span class="number">6</span>);</span><br><span class="line">        ListNode listNode5 = <span class="keyword">new</span> ListNode(<span class="number">4</span>);</span><br><span class="line">        l2.next = listNode4;</span><br><span class="line">        listNode4.next = listNode5;</span><br><span class="line"></span><br><span class="line">        ListNode l3 = addNumbers(l1, l2);</span><br><span class="line">        ListNode cursor = l3;</span><br><span class="line">        <span class="keyword">while</span> (cursor != <span class="keyword">null</span>)&#123;</span><br><span class="line">            System.out.println(cursor.val);</span><br><span class="line">            cursor = cursor.next;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出结果如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">输出结果：  7\n 0\n 8</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/04/15/%E5%A0%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -912,7 +1005,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">18</span>
+          <span class="site-state-item-count">19</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
