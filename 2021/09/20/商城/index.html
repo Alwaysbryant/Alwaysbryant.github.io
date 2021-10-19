@@ -20,20 +20,20 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="链表相加​    题目： 给定两个非空链表，存放的数据都是非负整数，并且都是按照逆序的方式进行存储，要求把这两个数字相加，并返回同样的链表。 ​    LeetCode的题目描述都令人头大。直接写个例子。 ​    假设有两个链表： ​    链表1：  2 —-&gt;&gt;&gt;&gt;  4 —-&gt;&gt;&gt;&gt; 3 ​    链表2：  5 —-&gt;&gt;&gt;">
+  <meta name="description" content="​    在网上找了个电商项目，没全部做完，主要是做了订单服务，对于分布式系统来说，最大的问题就是：如何保证数据的一致性，当某一服务挂掉后，如何保证数据不丢失，数据同步等，这些问题的造成，很重要的原因就是网络的不可抗因素，数据在网络中传输，而网络的抖动、网速的延迟都是解决不了的，所以需要分布式事务来解决这一问题。 ​    当然整个系统有几大模块： 商品服务（增删改查）、用户服务、订单服务、库存、">
 <meta property="og:type" content="article">
-<meta property="og:title" content="leetcode02">
-<meta property="og:url" content="http://example.com/2021/05/12/leetcode02/index.html">
+<meta property="og:title" content="商城">
+<meta property="og:url" content="http://example.com/2021/09/20/%E5%95%86%E5%9F%8E/index.html">
 <meta property="og:site_name" content="swaggyW&#39;s Blog">
-<meta property="og:description" content="链表相加​    题目： 给定两个非空链表，存放的数据都是非负整数，并且都是按照逆序的方式进行存储，要求把这两个数字相加，并返回同样的链表。 ​    LeetCode的题目描述都令人头大。直接写个例子。 ​    假设有两个链表： ​    链表1：  2 —-&gt;&gt;&gt;&gt;  4 —-&gt;&gt;&gt;&gt; 3 ​    链表2：  5 —-&gt;&gt;&gt;">
+<meta property="og:description" content="​    在网上找了个电商项目，没全部做完，主要是做了订单服务，对于分布式系统来说，最大的问题就是：如何保证数据的一致性，当某一服务挂掉后，如何保证数据不丢失，数据同步等，这些问题的造成，很重要的原因就是网络的不可抗因素，数据在网络中传输，而网络的抖动、网速的延迟都是解决不了的，所以需要分布式事务来解决这一问题。 ​    当然整个系统有几大模块： 商品服务（增删改查）、用户服务、订单服务、库存、">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2021-05-12T03:21:17.000Z">
-<meta property="article:modified_time" content="2021-10-11T03:57:58.683Z">
+<meta property="article:published_time" content="2021-09-20T04:24:21.000Z">
+<meta property="article:modified_time" content="2021-10-19T06:43:59.447Z">
 <meta property="article:author" content="swaggyW">
-<meta property="article:tag" content="leetcode">
+<meta property="article:tag" content="项目总结">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://example.com/2021/05/12/leetcode02/">
+<link rel="canonical" href="http://example.com/2021/09/20/%E5%95%86%E5%9F%8E/">
 
 
 <script id="page-configurations">
@@ -46,7 +46,7 @@
   };
 </script>
 
-  <title>leetcode02 | swaggyW's Blog</title>
+  <title>商城 | swaggyW's Blog</title>
   
 
 
@@ -168,7 +168,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/05/12/leetcode02/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/09/20/%E5%95%86%E5%9F%8E/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
@@ -181,7 +181,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          leetcode02
+          商城
         </h1>
 
         <div class="post-meta">
@@ -191,14 +191,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-05-12 11:21:17" itemprop="dateCreated datePublished" datetime="2021-05-12T11:21:17+08:00">2021-05-12</time>
+              <time title="创建时间：2021-09-20 12:24:21" itemprop="dateCreated datePublished" datetime="2021-09-20T12:24:21+08:00">2021-09-20</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-10-11 11:57:58" itemprop="dateModified" datetime="2021-10-11T11:57:58+08:00">2021-10-11</time>
+                <time title="修改时间：2021-10-19 14:43:59" itemprop="dateModified" datetime="2021-10-19T14:43:59+08:00">2021-10-19</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -206,7 +206,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/leetcode/" itemprop="url" rel="index"><span itemprop="name">leetcode</span></a>
+                  <a href="/categories/other/" itemprop="url" rel="index"><span itemprop="name">other</span></a>
                 </span>
             </span>
 
@@ -228,26 +228,33 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h3 id="链表相加"><a href="#链表相加" class="headerlink" title="链表相加"></a>链表相加</h3><p>​    题目： 给定两个非空链表，存放的数据都是非负整数，并且都是按照逆序的方式进行存储，要求把这两个数字相加，并返回同样的链表。</p>
-<p>​    LeetCode的题目描述都令人头大。直接写个例子。</p>
-<p>​    假设有两个链表：</p>
-<p>​    链表1：  2 —-&gt;&gt;&gt;&gt;  4 —-&gt;&gt;&gt;&gt; 3</p>
-<p>​    链表2：  5 —-&gt;&gt;&gt;&gt;  6 —-&gt;&gt;&gt;&gt; 4</p>
-<p>由于是逆序的，所以数字是 342和465 </p>
-<p>相加得到 342+465=807 </p>
-<p>所以返回的链表是 ：  7  —-&gt;&gt;&gt;&gt; 0  —-&gt;&gt;&gt;&gt; 8</p>
-<hr>
-<p>​    两个个位数相加，如果大于10 ，需要进1。。 所以，设置一个溢出位，如果遍历到的当前节点相加大于10， 则设置溢出位的值为1，在下一个节点相加之前，加上这个值。在计算这个溢出位时，可以直接通过sum/10 来计算， 因为，如果sum = num1 + num2 + carry(溢出位) 大于10， 则需要进1， 否则为 0.</p>
-<hr>
-<p>代码 </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Definition for singly-linked list.</span></span><br><span class="line"><span class="comment"> * public class ListNode &#123;</span></span><br><span class="line"><span class="comment"> *     int val;</span></span><br><span class="line"><span class="comment"> *     ListNode next;</span></span><br><span class="line"><span class="comment"> *     ListNode() &#123;&#125;</span></span><br><span class="line"><span class="comment"> *     ListNode(int val) &#123; this.val = val; &#125;</span></span><br><span class="line"><span class="comment"> *     ListNode(int val, ListNode next) &#123; this.val = val; this.next = next; &#125;</span></span><br><span class="line"><span class="comment"> * &#125;</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> ListNode <span class="title">addTwoNumbers</span><span class="params">(ListNode l1, ListNode l2)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//创建一个新的头结点</span></span><br><span class="line">        ListNode l3 = <span class="keyword">new</span> ListNode();</span><br><span class="line">        <span class="comment">//创建指针</span></span><br><span class="line">        ListNode cursor = l3;</span><br><span class="line">        <span class="comment">//初始化溢出位的值</span></span><br><span class="line">        <span class="keyword">int</span> carry = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">//遍历两个链表</span></span><br><span class="line">        <span class="keyword">while</span> (l1 != <span class="keyword">null</span> || l2 != <span class="keyword">null</span> || carry != <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="comment">//carry ！= 0 是为了防止最后一位数字大于10，需要进1</span></span><br><span class="line">            <span class="keyword">int</span> num1 = ( l1 == <span class="keyword">null</span> ) ? <span class="number">0</span> : l1.val;</span><br><span class="line">            <span class="keyword">int</span> num2 = ( l2 == <span class="keyword">null</span> ) ? <span class="number">0</span> : l2.val;</span><br><span class="line">            <span class="comment">//计算和</span></span><br><span class="line">            <span class="keyword">int</span> sum = num1 + num2 + carry;</span><br><span class="line">            <span class="comment">//得到溢出位的值</span></span><br><span class="line">            carry = sum /<span class="number">10</span>;</span><br><span class="line">            <span class="comment">//创建一个新的节点挂到l3的后面，sum % 10 有可能得到的sum是大于10的</span></span><br><span class="line">            ListNode newNode = <span class="keyword">new</span> ListNode(sum % <span class="number">10</span>);</span><br><span class="line">            cursor.next = newNode;</span><br><span class="line">            <span class="comment">//指针后移</span></span><br><span class="line">            cursor = cursor.next;</span><br><span class="line">            </span><br><span class="line">            <span class="comment">//l1,l2后移</span></span><br><span class="line">            <span class="keyword">if</span> (l1.next != <span class="keyword">null</span>) l1 = l1.next;</span><br><span class="line">            <span class="keyword">if</span> (l2.next != <span class="keyword">null</span>) l2 = l2.next;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">//将结果返回</span></span><br><span class="line">        <span class="keyword">return</span> l3.next;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        <p>​    在网上找了个电商项目，没全部做完，主要是做了订单服务，对于分布式系统来说，最大的问题就是：如何保证数据的一致性，当某一服务挂掉后，如何保证数据不丢失，数据同步等，这些问题的造成，很重要的原因就是网络的不可抗因素，数据在网络中传输，而网络的抖动、网速的延迟都是解决不了的，所以需要分布式事务来解决这一问题。</p>
+<p>​    当然整个系统有几大模块： 商品服务（增删改查）、用户服务、订单服务、库存、支付。</p>
+<p>​    订单服务： 用户点击提交订单，向服务器发送请求之后，订单服务会创建订单，并远程调用库存服务，进行锁库存，远程调用库存服务，如果库存服务挂掉了，订单服务的事务无法让其进行回滚，就会出现，订单创建成功，库存却没有减少。这样就会有问题。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@PostMapping(&quot;/oreder/createOrder&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Result <span class="title">createOrder</span><span class="params">(<span class="meta">@RequestBody</span> OrderVo orderVo)</span> </span>&#123;</span><br><span class="line">    String orderId = orderService.createOrder(orderVo);</span><br><span class="line">    <span class="keyword">if</span> (orderId != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="comment">//调用库存服务进行锁库存</span></span><br><span class="line">        stockService.lockStock(order.getStockNum());</span><br><span class="line">        Result.ok().data(<span class="string">&quot;orderId&quot;</span>,order.);</span><br><span class="line">    &#125; </span><br><span class="line">    <span class="keyword">return</span> Result.error();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>​    验证一下,手动创建两个链表</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//创建l1</span></span><br><span class="line">		ListNode l1 = <span class="keyword">new</span> ListNode(<span class="number">2</span>);</span><br><span class="line">        ListNode listNode1 = <span class="keyword">new</span> ListNode(<span class="number">4</span>);</span><br><span class="line">        ListNode listNode2 = <span class="keyword">new</span> ListNode(<span class="number">3</span>);</span><br><span class="line">        l1.next = listNode1;</span><br><span class="line">        listNode1.next = listNode2;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//创建l2</span></span><br><span class="line">        ListNode l2 = <span class="keyword">new</span> ListNode(<span class="number">5</span>);</span><br><span class="line">        ListNode listNode4 = <span class="keyword">new</span> ListNode(<span class="number">6</span>);</span><br><span class="line">        ListNode listNode5 = <span class="keyword">new</span> ListNode(<span class="number">4</span>);</span><br><span class="line">        l2.next = listNode4;</span><br><span class="line">        listNode4.next = listNode5;</span><br><span class="line"></span><br><span class="line">        ListNode l3 = addNumbers(l1, l2);</span><br><span class="line">        ListNode cursor = l3;</span><br><span class="line">        <span class="keyword">while</span> (cursor != <span class="keyword">null</span>)&#123;</span><br><span class="line">            System.out.println(cursor.val);</span><br><span class="line">            cursor = cursor.next;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>输出结果如下</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">输出结果：  7\n 0\n 8</span><br></pre></td></tr></table></figure>
-
+<p>​    可以作为分布式事务的框架有阿里巴巴的开源框架seata，使用AT模式，seata中有三个角色: </p>
+<p>​    TC (Transaction Coordinator) - 事务协调者</p>
+<p>​    维护全局和分支事务的状态，驱动全局事务提交或回滚。</p>
+<p>​    TM (Transaction Manager) - 事务管理器</p>
+<p>​    定义全局事务的范围：开始全局事务、提交或回滚全局事务。</p>
+<p>​    RM (Resource Manager) - 资源管理器</p>
+<p>​    管理分支事务处理的资源，与TC交谈以注册分支事务和报告分支事务的状态，并驱动分支事务提交或回滚。</p>
+<p>——-来自seata官网: seata.io——————-</p>
+<p>​    关于使用，只需要加上一个注解即可，开启seata分布式事务，**@GlobalTransactional** </p>
+<p>​    TM会开启一个全局事务，RM会对分支事务进行处理，并且一并由TC来进行事务的提交和回滚。这样，如果库存服务挂掉了，那么全局事务就会发生回滚，从而保证数据的一致性。</p>
+<p>​    可是。。。如果涉及到高并发场景，会有更好的办法嘛</p>
+<p>​    使用消息队列实现分布式事务，通过消息传递来实现。</p>
+<p>​    创建订单后，把订单信息放到一个延时队列中，不考虑主动支付和主动取消，假设设置延时队列的ttl为30min，并调用远程的库存服务，进行库存的锁定，库存的也可以使用一个延时队列来监听，假设ttl为35min。设置延时队列的原因，因为订单服务调用库存服务之后，库存锁定，结果订单服务挂掉了，那么库存服务会一直锁定，显然这个时候应该进行解锁，所以当35分钟后，延时队列中的消息会进入死信队列，并查询订单状态，根据订单状态来判断是否需要解锁。所以订单服务也需要向库存服务中的死信队列中发送订单详情的消息。</p>
+<p>​    那如果订单创建之后，30min进入死信队列，并会查询支付状态，如果未支付，则取消订单，修改订单状态，支付成功，则修改订单状态为已支付。</p>
+<p>​    消息队列保证消息的可靠性，可以通过try-catch代码块来进行异常捕捉，并通过日志的方式记录消息发送内容。并且设置确认机制为手动ack模式。以免消息的丢失。</p>
+<p>​    另外，如何保证订单不被重复提交，设置幂等性，每次结果返回的都是一样的，为了防止重复提交，对每个订单请求都生成一个token，并放入到redis中，当每次提交请求时，从前端的header中获取token并与redis中进行比对，但是需要保证原子操作，redis可以使用lua脚本。这样防止多次重复提交订单。</p>
+<p>​    秒杀服务。秒杀服务是常有的，双十一、双十二，并发量高达几千万，如何保证秒杀的正确性，不重复卖一间商品，不超卖。可以使用redis中的框架，Redisson，来实现分布式锁。</p>
+<p>​    秒杀一般都是一个固定的时间，所以需要通过定时任务来上架商品，并放入redis缓存中，首先是存放商品的id，然后存放商品的信息，key为id+随机码，随机码是为了防止提前有人访问。</p>
+<p>   秒杀需要考虑的问题： 独立服务，因为并发较高，所以独立出来，防止影响其他服务。</p>
+<p>​    通过随机码来防止恶意访问。通过网关对恶意请求拦截。防止大量恶意请求造成redis缓存穿透。</p>
+<p>​    最主要的就是redis，redis中有与JUC包下很多类似的类可以使用，这里主要是 Semphare。对于库存，可以使用信号量来作为库存的扣减。</p>
+<p>​    </p>
 
     </div>
 
@@ -269,7 +276,7 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/leetcode/" rel="tag"># leetcode</a>
+              <a href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" rel="tag"># 项目总结</a>
           </div>
 
         
@@ -278,12 +285,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2021/04/25/%E6%8E%92%E5%BA%8F%E4%B8%8B/" rel="prev" title="排序下">
-      <i class="fa fa-chevron-left"></i> 排序下
+    <a href="/2021/07/12/AQS%E7%9A%84%E5%88%86%E6%9E%90/" rel="prev" title="AQS的分析">
+      <i class="fa fa-chevron-left"></i> AQS的分析
     </a></div>
       <div class="post-nav-item">
-    <a href="/2021/05/14/leetcode03/" rel="next" title="leetcode03">
-      leetcode03 <i class="fa fa-chevron-right"></i>
+    <a href="/2021/09/29/%E4%B8%80%E8%87%B4%E6%80%A7%E5%93%88%E5%B8%8C/" rel="next" title="一致性哈希">
+      一致性哈希 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -343,7 +350,6 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%93%BE%E8%A1%A8%E7%9B%B8%E5%8A%A0"><span class="nav-text">链表相加</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

@@ -97,7 +97,7 @@
       <h1 class="site-title">swaggyW's Blog</h1>
       <span class="logo-line-after"><i></i></span>
     </a>
-      <p class="site-subtitle" itemprop="description">自学程序员的点点滴滴</p>
+      <p class="site-subtitle" itemprop="description">感谢来访~~~~~</p>
   </div>
 
   <div class="site-nav-right">
@@ -854,6 +854,106 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/09/20/%E5%95%86%E5%9F%8E/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
+      <meta itemprop="name" content="swaggyW">
+      <meta itemprop="description" content="永远不要放弃">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="swaggyW's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/09/20/%E5%95%86%E5%9F%8E/" class="post-title-link" itemprop="url">商城</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-09-20 12:24:21" itemprop="dateCreated datePublished" datetime="2021-09-20T12:24:21+08:00">2021-09-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-10-19 14:43:59" itemprop="dateModified" datetime="2021-10-19T14:43:59+08:00">2021-10-19</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/other/" itemprop="url" rel="index"><span itemprop="name">other</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>​    在网上找了个电商项目，没全部做完，主要是做了订单服务，对于分布式系统来说，最大的问题就是：如何保证数据的一致性，当某一服务挂掉后，如何保证数据不丢失，数据同步等，这些问题的造成，很重要的原因就是网络的不可抗因素，数据在网络中传输，而网络的抖动、网速的延迟都是解决不了的，所以需要分布式事务来解决这一问题。</p>
+<p>​    当然整个系统有几大模块： 商品服务（增删改查）、用户服务、订单服务、库存、支付。</p>
+<p>​    订单服务： 用户点击提交订单，向服务器发送请求之后，订单服务会创建订单，并远程调用库存服务，进行锁库存，远程调用库存服务，如果库存服务挂掉了，订单服务的事务无法让其进行回滚，就会出现，订单创建成功，库存却没有减少。这样就会有问题。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@PostMapping(&quot;/oreder/createOrder&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Result <span class="title">createOrder</span><span class="params">(<span class="meta">@RequestBody</span> OrderVo orderVo)</span> </span>&#123;</span><br><span class="line">    String orderId = orderService.createOrder(orderVo);</span><br><span class="line">    <span class="keyword">if</span> (orderId != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="comment">//调用库存服务进行锁库存</span></span><br><span class="line">        stockService.lockStock(order.getStockNum());</span><br><span class="line">        Result.ok().data(<span class="string">&quot;orderId&quot;</span>,order.);</span><br><span class="line">    &#125; </span><br><span class="line">    <span class="keyword">return</span> Result.error();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    可以作为分布式事务的框架有阿里巴巴的开源框架seata，使用AT模式，seata中有三个角色: </p>
+<p>​    TC (Transaction Coordinator) - 事务协调者</p>
+<p>​    维护全局和分支事务的状态，驱动全局事务提交或回滚。</p>
+<p>​    TM (Transaction Manager) - 事务管理器</p>
+<p>​    定义全局事务的范围：开始全局事务、提交或回滚全局事务。</p>
+<p>​    RM (Resource Manager) - 资源管理器</p>
+<p>​    管理分支事务处理的资源，与TC交谈以注册分支事务和报告分支事务的状态，并驱动分支事务提交或回滚。</p>
+<p>——-来自seata官网: seata.io——————-</p>
+<p>​    关于使用，只需要加上一个注解即可，开启seata分布式事务，**@GlobalTransactional** </p>
+<p>​    TM会开启一个全局事务，RM会对分支事务进行处理，并且一并由TC来进行事务的提交和回滚。这样，如果库存服务挂掉了，那么全局事务就会发生回滚，从而保证数据的一致性。</p>
+<p>​    可是。。。如果涉及到高并发场景，会有更好的办法嘛</p>
+<p>​    使用消息队列实现分布式事务，通过消息传递来实现。</p>
+<p>​    创建订单后，把订单信息放到一个延时队列中，不考虑主动支付和主动取消，假设设置延时队列的ttl为30min，并调用远程的库存服务，进行库存的锁定，库存的也可以使用一个延时队列来监听，假设ttl为35min。设置延时队列的原因，因为订单服务调用库存服务之后，库存锁定，结果订单服务挂掉了，那么库存服务会一直锁定，显然这个时候应该进行解锁，所以当35分钟后，延时队列中的消息会进入死信队列，并查询订单状态，根据订单状态来判断是否需要解锁。所以订单服务也需要向库存服务中的死信队列中发送订单详情的消息。</p>
+<p>​    那如果订单创建之后，30min进入死信队列，并会查询支付状态，如果未支付，则取消订单，修改订单状态，支付成功，则修改订单状态为已支付。</p>
+<p>​    消息队列保证消息的可靠性，可以通过try-catch代码块来进行异常捕捉，并通过日志的方式记录消息发送内容。并且设置确认机制为手动ack模式。以免消息的丢失。</p>
+<p>​    另外，如何保证订单不被重复提交，设置幂等性，每次结果返回的都是一样的，为了防止重复提交，对每个订单请求都生成一个token，并放入到redis中，当每次提交请求时，从前端的header中获取token并与redis中进行比对，但是需要保证原子操作，redis可以使用lua脚本。这样防止多次重复提交订单。</p>
+<p>​    秒杀服务。秒杀服务是常有的，双十一、双十二，并发量高达几千万，如何保证秒杀的正确性，不重复卖一间商品，不超卖。可以使用redis中的框架，Redisson，来实现分布式锁。</p>
+<p>​    秒杀一般都是一个固定的时间，所以需要通过定时任务来上架商品，并放入redis缓存中，首先是存放商品的id，然后存放商品的信息，key为id+随机码，随机码是为了防止提前有人访问。</p>
+<p>   秒杀需要考虑的问题： 独立服务，因为并发较高，所以独立出来，防止影响其他服务。</p>
+<p>​    通过随机码来防止恶意访问。通过网关对恶意请求拦截。防止大量恶意请求造成redis缓存穿透。</p>
+<p>​    最主要的就是redis，redis中有与JUC包下很多类似的类可以使用，这里主要是 Semphare。对于库存，可以使用信号量来作为库存的扣减。</p>
+<p>​    </p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/12/AQS%E7%9A%84%E5%88%86%E6%9E%90/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -989,6 +1089,98 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/10/%E5%9C%A8%E7%BA%BF%E6%95%99%E8%82%B2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
+      <meta itemprop="name" content="swaggyW">
+      <meta itemprop="description" content="永远不要放弃">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="swaggyW's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/07/10/%E5%9C%A8%E7%BA%BF%E6%95%99%E8%82%B2/" class="post-title-link" itemprop="url">在线教育</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-07-10 18:44:46" itemprop="dateCreated datePublished" datetime="2021-07-10T18:44:46+08:00">2021-07-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-10-19 17:55:00" itemprop="dateModified" datetime="2021-10-19T17:55:00+08:00">2021-10-19</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/other/" itemprop="url" rel="index"><span itemprop="name">other</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>​    在网上找了个开源项目，一个在线教育的网站，用户可以购买课程之后，就可以观看。用到了微服务的架构，后台管理和前台用户系统。记录一下。</p>
+<p>​     一个网站需要哪些功能，只有明确这一点，才能在实现的时候有清晰的思路。</p>
+<p>​    后台管理员需要有哪些功能？ 在线教育，有几个重要的点，课程、权限。课程： 后台管理员在后台系统中，进行课程的添加（包含课程的一些信息以及课程视频的上传、分类），权限： 管理员对不同的人员设置访问权限，哪些人有哪些角色，而哪些角色又有哪些权限。</p>
+<p>​    前台用户系统： 用户的登录注册，用户的支付，用户的观看。</p>
+<p>​     采用微服务架构，将项目根据功能分成一个个服务模块。</p>
+<p>​     前端方面： 使用vue来进行编写。并且对于一些按钮表单啥的，直接引入element-ui，在官网上面找然后修改就可以了。</p>
+<p>​    后台管理系统</p>
+<p>​    关于老师模块，老师的信息添加，前端form表单提交向服务端发送请求，将信息封装成一个json对象发送给服务器，直接保存在数据库就可以。删除采用逻辑删除的方式。更新信息，通过老师的ID来查询对应的数据回显到页面，在进行修改，和添加差不多。最后就是查询。按照条件搜索进行查询，一般查询会使用模糊匹配、日期、老师的头衔等进行查询，封装一个实体类。增删改查比较简单。</p>
+<p>​    课程模块，除了增删改查之外，课程的分类查询及删除，稍微复杂一点，首先由于多级分类，一个分类下面有多个分类。课程的分类有两级。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FirstSubject</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String id;</span><br><span class="line">    <span class="keyword">private</span> String title;</span><br><span class="line">    <span class="keyword">private</span> List&lt;SecondSubject&gt; children = <span class="keyword">new</span> ArrayList&lt;&gt;(); <span class="comment">//一个一级分类有多个二级分类</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SecondSubject</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String id;</span><br><span class="line">    <span class="keyword">private</span> String title;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    在课程中，需要添加章节和小节，在小节中需要添加视频，而视频使用阿里云视频点播，每次删除小节的时候都需要调用视频点播服务，进行视频的删除。    </p>
+<p>​    权限管理，对管理人员进行权限分配，用户（user）是什么角色（role），而角色又有什么权限（permission），首先在建表方面，需要5张表，t_user、t_role、t_permission、t_user_role、t_role_permission。使用的是RBAC（Role-Based Access Control）模型。用户登陆之后，会根据用户名获取到用户的权限列表，然后放入redis中，key为用户名，然后客户端从请求头中获取到token，并取出用户名，然后从redis中获取权限列表，由spring security赋予权限。</p>
+<p>​     用户的注册，使用手机获取验证码，调用阿里云的api就可以了。用户的微信登录，扫描二维码调用微信接口并会返回一个临时票据code，通过code去访问微信固定地址，即可得到微信扫描者的access_token 和openid，通过这两个值去访问微信地址，从而得到扫描人的信息。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@GetMapping(&quot;sendCode/&#123;phone&#125;&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Result <span class="title">sendCode</span><span class="params">(<span class="meta">@PathVariable</span> String phone)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//先判断缓存中是否存在</span></span><br><span class="line">    String code = redisTemplate.opsForValue().get(phone);</span><br><span class="line">    <span class="comment">//如果缓存有</span></span><br><span class="line">    <span class="keyword">if</span> (!StringUtils.isEmpty(code)) &#123;</span><br><span class="line">        <span class="keyword">return</span> Result.ok();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//生成六位随机数，给阿里云发送短信</span></span><br><span class="line">    code = RandomUtil.getSixBitRandom();</span><br><span class="line">    <span class="comment">//放入一个map中</span></span><br><span class="line">    HashMap&lt;String, Object&gt; params = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">   params.put(<span class="string">&quot;code&quot;</span>, code);</span><br><span class="line"></span><br><span class="line">    redisTemplate.opsForValue().set(phone, code, <span class="number">5</span>, TimeUnit.MINUTES);</span><br><span class="line">  </span><br><span class="line">    <span class="comment">//调用service方法进行发啊送短信</span></span><br><span class="line">    <span class="keyword">boolean</span> isSuccess = msmService.send(params, phone);</span><br><span class="line">    <span class="keyword">if</span> (isSuccess) &#123;</span><br><span class="line">        <span class="comment">//说明发送成功,放入到redis缓存中</span></span><br><span class="line">        redisTemplate.opsForValue().set(phone, code, <span class="number">5</span>, TimeUnit.MINUTES);</span><br><span class="line">        <span class="keyword">return</span> Result.ok();</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> Result.error().message(<span class="string">&quot;发送失败&quot;</span>);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    用户支付功能，用户点击支付，会生成一个订单，订单内容包含用户信息与课程信息，因此需要通过feign远程调用。因为是网上课程，所以没有库存问题。不需要过多的考虑分布式事务问题。生成订单后，会跳转至微信支付，调用微信支付的api。</p>
+<p>​    另外就是网关了，通过gateway进行统一的请求转发。并且解决跨域问题。</p>
+<p>这个项目功能不算难，主要是思路，当有一个需求给到自己时，应该怎么完成需求，完成之后应该怎么优化，很重要，我没做过实际项目，对于一个转行的人来说，找工作很难，但是只要坚持自己的想法，一定可以成功的。。。多学习，多动手。。加油</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/09/redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1101,246 +1293,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/06/02/factorybean%E5%92%8Cbeanfactory/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
-      <meta itemprop="name" content="swaggyW">
-      <meta itemprop="description" content="永远不要放弃">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="swaggyW's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/06/02/factorybean%E5%92%8Cbeanfactory/" class="post-title-link" itemprop="url">factorybean和beanfactory</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-06-02 17:04:33" itemprop="dateCreated datePublished" datetime="2021-06-02T17:04:33+08:00">2021-06-02</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-10-11 18:55:37" itemprop="dateModified" datetime="2021-10-11T18:55:37+08:00">2021-10-11</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h4 id="BeanFactory"><a href="#BeanFactory" class="headerlink" title="BeanFactory"></a>BeanFactory</h4><p>​    BeanFactory是spring容器的顶级接口，或者就是源码说的root，根接口。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * The root interface for accessing a Spring bean container.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">BeanFactory</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>​    BeanFactory不能够被实例化，而是定义了一套所有IOC容器必须遵守的规范。可以看看BeanFactory的结构，如下</p>
-<p> <img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/spring/factoryBean%E5%92%8Cbeanfactory/beanfactory%E7%BB%93%E6%9E%84.PNG" alt="结构"></p>
-<p>​    多个重载方法，getBean(),从spring容器中获取bean对象。 containsBean()判断spring容器中是否包含某个bean。   还有判断bean的作用域，即是否为单例bean或者多例bean的方法，isSingleton和isPrototype,还有根据bean的名字获取名字等等…</p>
-<p>   具体的容器可以对其进行功能的增加，像spring中用到比较多的ApplicationContext，就是BeanFactory的子类。而ApplicationContext接口又衍生了很多的子类，像比较熟悉的ClassPathXmlApplicationContext、 AnnoationConfigApplicationContext。</p>
-<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/spring/factoryBean%E5%92%8Cbeanfactory/BeanFactory.png" alt="类继承图"></p>
-<hr>
-<h4 id="FactoryBean"><a href="#FactoryBean" class="headerlink" title="FactoryBean"></a>FactoryBean</h4><p>​    FactoryBean也是一个接口，可以看官方注释如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Interface to be implemented by objects used within a &#123;<span class="doctag">@link</span> BeanFactory&#125; which</span></span><br><span class="line"><span class="comment"> * are themselves factories for individual objects. </span></span><br><span class="line"><span class="comment"> * ↑ 使用BeanFactory内的对象实现的接口，这些对象本身就是它们自己的工厂。。to be honest。。我也不是很明白这句话是什么意思。。。。</span></span><br><span class="line"><span class="comment"> * If a bean implements this interface, it is used as a factory for an object to expose, not directly as a bean instance that will be exposed itself.</span></span><br><span class="line"><span class="comment"> *  如果一个bean实现了这个接口，它可以作为暴露对象的工厂，而不是作为直接将自己暴露的bean实例。</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;&lt;b&gt;NB: A bean that implements this interface cannot be used as a normal bean.&lt;/b&gt; 实现这个接口的bean不能作为普通bean来使用</span></span><br><span class="line"><span class="comment"> * A FactoryBean is defined in a bean style, but the object exposed for bean</span></span><br><span class="line"><span class="comment"> * references (&#123;<span class="doctag">@link</span> #getObject()&#125;) is always the object that it creates.</span></span><br><span class="line"><span class="comment"> 一个FactoryBean以bean的方式来定义，但是bean引用的对象一直都是它创建的对象。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">FactoryBean</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">	<span class="meta">@Nullable</span></span><br><span class="line">	<span class="function">T <span class="title">getObject</span><span class="params">()</span> <span class="keyword">throws</span> Exception</span>;</span><br><span class="line">    </span><br><span class="line">	<span class="meta">@Nullable</span></span><br><span class="line">	Class&lt;?&gt; getObjectType();</span><br><span class="line">    </span><br><span class="line">	<span class="function"><span class="keyword">default</span> <span class="keyword">boolean</span> <span class="title">isSingleton</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>​    第一句话我自己不是很明白，可能他的意思是BeanFactory提供了spring容器的规范，实现了BeanFactory的类或接口中所使用的对象或实例，这些对象都可以作为单一对象的工厂。可能是想说明一个bean可以作为一个生产bean对象的工厂？</p>
-<p>​    接下来就清晰了一点，如果一个bean实现了FactoryBean这个接口，则它可以作为工厂来暴露对象，而不是把自己作为一个bean实例暴露，好像也很好的解释了前一句话，实现这个接口的bean可以作为工厂bean来生产bean。。。</p>
-<p>   最关键的就是最后一句，<strong>如果一个bean实现了FactoryBean，则说明它是一个工厂bean，但是，此时我们getBean（） 来获取这个bean时，我们得到的不是它本身，而是它创建出来的对象，他创建出来的对象是什么？ 正如它的注释里面的—– getObject()。</strong></p>
-<hr>
-<p>​    举个例子，我们编写一个User类，并将其注入spring容器中。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> age;</span><br><span class="line">    String name;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">User</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">User</span><span class="params">(<span class="keyword">int</span> age, String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.age = age;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">&quot;myUser&quot;</span> <span class="attr">class</span>=<span class="string">&quot;User&quot;</span> &gt;</span></span><br><span class="line">       <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;name&quot;</span> <span class="attr">value</span>=<span class="string">&quot;jack&quot;</span> /&gt;</span></span><br><span class="line">       <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;age&quot;</span> <span class="attr">value</span>=<span class="string">&quot;12&quot;</span> /&gt;</span></span><br><span class="line">   <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>​    在写一个类实现FactoryBean接口，如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.FactoryBean;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserBean</span> <span class="keyword">implements</span> <span class="title">FactoryBean</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">getObject</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> User();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> Class&lt;?&gt; getObjectType() &#123;</span><br><span class="line">        <span class="keyword">return</span> User.class;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isSingleton</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>​    同样，注入spring容器</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">&quot;userBean&quot;</span> <span class="attr">class</span>=<span class="string">&quot;UserBean&quot;</span>&gt;</span> <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>​    可以来测试一下，通过getBean的方式来从spring容器中获取bean，结果userBean得到的结果是User类。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test05</span><span class="params">()</span> </span>&#123;</span><br><span class="line">       ClassPathXmlApplicationContext context = <span class="keyword">new</span> ClassPathXmlApplicationContext(<span class="string">&quot;bean5.xml&quot;</span>);</span><br><span class="line">       Object userBean = context.getBean(<span class="string">&quot;userBean&quot;</span>);</span><br><span class="line">       System.out.println(userBean.getClass().getName());</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
-
-<p>输出结果： </p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">User</span><br></pre></td></tr></table></figure>
-
-<p>这是因为UserBean实现了FactoryBean接口，那么他就是一个工厂bean，它生产的bean是根据方法GetObject() 确定的，如果想要得到改对象，在bean的名字前面加上“&amp;”即可。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Object userBean = context.getBean(<span class="string">&quot;&amp;userBean&quot;</span>);</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>​    BeanFactory是spring的bean工厂，它是负责生产和管理bean的工厂，给spring容器提供了一系列的规范，所有的容器都必须遵守这一规范。</p>
-<p>​    FactoryBean是在spring容器的基础上，给bean的实现加上一个简单的工厂模式，即生产bean的方式更加灵活了，我们可以在getObject() 方法中指定需要生产bean的类型。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/05/26/springMVC%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
-      <meta itemprop="name" content="swaggyW">
-      <meta itemprop="description" content="永远不要放弃">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="swaggyW's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/05/26/springMVC%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B/" class="post-title-link" itemprop="url">springMVC执行流程</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-05-26 14:15:28" itemprop="dateCreated datePublished" datetime="2021-05-26T14:15:28+08:00">2021-05-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-10-09 14:30:31" itemprop="dateModified" datetime="2021-10-09T14:30:31+08:00">2021-10-09</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>​    当用户向服务器发送请求时。</p>
-<p>​    在servlet阶段，用户发送请求后，servlet端会接收用户端传来的数据，并通过service层进行业务的处理，再将处理后的结果，通过请求转发或者重定向的方式，反馈给用户。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloServlet</span> <span class="keyword">extends</span> <span class="title">HttpServlet</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">doGet</span><span class="params">(HttpServletRequest req, HttpServletResponse resp)</span> <span class="keyword">throws</span> ServletException, IOException </span>&#123;</span><br><span class="line">        String username = req.getParameter(<span class="string">&quot;username&quot;</span>);</span><br><span class="line">        System.out.println(username);</span><br><span class="line">        req.setAttribute(<span class="string">&quot;username&quot;</span>, username);</span><br><span class="line">        req.getRequestDispatcher(<span class="string">&quot;/test/a.jsp&quot;</span>).forward(req,resp);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">doPost</span><span class="params">(HttpServletRequest req, HttpServletResponse resp)</span> <span class="keyword">throws</span> ServletException, IOException </span>&#123;</span><br><span class="line">        doGet(req,resp);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>​    在整个过程中，我们需要再web.xml文件中配置相应的Servlet。当用户发送不同的请求，我们就需要创建不同的Servlet程序，并且在xml文件中进行配置。</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">servlet</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>HelloServlet<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">servlet-class</span>&gt;</span>servlet.HelloServlet<span class="tag">&lt;/<span class="name">servlet-class</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">servlet</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">servlet-mapping</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>HelloServlet<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>/helloServlet<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">servlet-mapping</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>​    但是，在实际的开发过程中，一个web工程有很多不同的功能，如果这样，用户发送不一样的请求，就要新建一个servlet，就要配置一个servlet，这样会让代码冗余，而且工作量也十分大。那么怎么解决这个问题呢？ SpringMVC很好的解决了这个问题。</p>
-<p>​    在SpringMVC中，你不需要编写servlet程序，因此也不需要在 web.xml中对其进行配置。springMVC对其进行了分离，当用户发送请求时，SpringMVC会通过前端控制器（DispatcherServlet）对用户的请求进行拦截和过滤，分别通过处理器映射、处理器适配、视图解析器处理之后，将结果渲染到视图上。而在此过程中，在处理器适配完成之后，会找到相应的控制器（Controller），进行业务的执行。整个springMVC的执行看下图：</p>
-<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/springmvc/20200908180209606.png" alt="执行流程"></p>
-<p>​    根据上图可以得出具体的<strong>执行原理</strong>：</p>
-<p><strong>1.用户发送请求之后，请求由前端控制器（DispatcherServlet）接收，前端控制器是整个SpringMVC框架的核心。</strong></p>
-<p><strong>2.HandlerMapping，即处理器映射，会根据用户的请求来映射对应的Handler，即处理器。</strong></p>
-<p><strong>3.HandlerExecution，即处理器执行，通过处理器的执行来找到相应的控制器。</strong></p>
-<p><strong>4.将得到的控制器返回</strong></p>
-<p><strong>5.HandlerAdapter，处理器适配，根据特定的规则去查找适配的处理器。</strong></p>
-<p><strong>6.Controller，控制器，执行适配的处理器，并处理具体的业务，再将ModelAndView返回给前端控制器</strong></p>
-<p><strong>7.ViewResolver,视图解析器，将ModelAndView进行解析，并渲染到视图上</strong></p>
-<p>其实，在使用springMVC进行web开发的过程中，我们不需要关心前端控制器是如何来进行过滤拦截等操作的，我们只需要关注业务层的相关代码以及Controller，其他SpringMVC已经帮我们在底层实现了，我们直接用就可以了。但是为了搞清楚整个执行过程是很有必要的，可以帮助我们更好的去理解SpringMVC的优点。</p>
-<p>编写一个实例如下：</p>
-<p>​    前面说到，一切的工作都是由前端控制器来执行的，因此需要再web.xml配置DispatcherServlet的参数信息，设置参数，绑定到相对应的spring配置文件中</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 用户发送请求，会通过DispatcherServlet 前端控制器，请求分发器 这是整个MVC的核心 --&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 配置DispatcherServlet --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">servlet</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>springmvc<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">servlet-class</span>&gt;</span>org.springframework.web.servlet.DispatcherServlet<span class="tag">&lt;/<span class="name">servlet-class</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">init-param</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!-- 配置参数， 需要绑定的spring的配置文件 --&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">param-name</span>&gt;</span>contextConfigLocation<span class="tag">&lt;/<span class="name">param-name</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">param-value</span>&gt;</span>classpath:springmvc-servlet.xml<span class="tag">&lt;/<span class="name">param-value</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">init-param</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 设置启动级别，1： 服务器启动就开启 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">load-on-startup</span>&gt;</span>1<span class="tag">&lt;/<span class="name">load-on-startup</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">servlet</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">servlet-mapping</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>springmvc<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>/<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">servlet-mapping</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>​    配置好前端控制器，那么当用户发送请求的时候，就会被它所过滤和拦截。</p>
-<p>​    接下来，按照图中的信息，我们需要三个部分的处理，分别是：处理器映射、处理器适配、视图解析。这些事情全部都在spring的配置文件中去配置，先上代码：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 处理器映射器 前端控制器会根据用户请求，调用处理器映射，根据请求的url来查找对应的Handler</span></span><br><span class="line"><span class="comment">     查到对应的处理器之后，会调用处理器你执行器，查找对应的控制器，并返回给前端控制器--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">class</span>=<span class="string">&quot;org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping&quot;</span> /&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 处理器适配器 前端控制器会调用处理器适配，并执行处理器，在将具体的业务交给适配的控制器去处理--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">class</span>=<span class="string">&quot;org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter&quot;</span> /&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 视图解析器， 控制器处理相关业务之后，就会返回一个ModelAndView，视图解析器就会对其进行解析--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">class</span>=<span class="string">&quot;org.springframework.web.servlet.view.InternalResourceViewResolver&quot;</span> <span class="attr">id</span>=<span class="string">&quot;internalResourceViewResolver&quot;</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 视图解析器会根据返回的参数，将数据拼接成一个完整的url，返回给用户 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;prefix&quot;</span> <span class="attr">value</span>=<span class="string">&quot;/WEB-INF/jsp/&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;suffix&quot;</span> <span class="attr">value</span>=<span class="string">&quot;.jsp&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>​    先不管上述代码，前面说到，我们只需要编写Controller以及业务层的相关代码就可以了，那Controller程序怎么编写呢？其实spring为我们提供了一个Controller接口，我们只需要去实现这个接口就可以了。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletRequest;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletResponse;</span><br><span class="line"><span class="keyword">import</span> org.springframework.lang.Nullable;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.servlet.ModelAndView;</span><br><span class="line"></span><br><span class="line"><span class="meta">@FunctionalInterface</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Controller</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Nullable</span></span><br><span class="line">    <span class="function">ModelAndView <span class="title">handleRequest</span><span class="params">(HttpServletRequest var1, HttpServletResponse var2)</span> <span class="keyword">throws</span> Exception</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>​    可以看出，Controller是一个函数型接口， 里面只有一个方法，而该方法刚好返回的就是一个ModelAndView对象，正是我们所需要的.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//适配器进过处理后，适配相对应的Controller控制器</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloController</span> <span class="keyword">implements</span> <span class="title">Controller</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ModelAndView <span class="title">handleRequest</span><span class="params">(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="comment">//创建一个ModelAndView实例</span></span><br><span class="line">        ModelAndView modelAndView = <span class="keyword">new</span> ModelAndView();</span><br><span class="line"></span><br><span class="line">        <span class="comment">//具体业务</span></span><br><span class="line">        String result = <span class="string">&quot;HelloSpringMVC&quot;</span>;</span><br><span class="line">        modelAndView.addObject(<span class="string">&quot;msg&quot;</span>, result);</span><br><span class="line">        <span class="comment">//视图跳转到具体的那个页面</span></span><br><span class="line">        <span class="comment">//视图解析器会自动拼接成完整的url</span></span><br><span class="line">        modelAndView.setViewName(<span class="string">&quot;test&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//返回一个模型视图</span></span><br><span class="line">        <span class="keyword">return</span> modelAndView;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>​    我们需要先new一个ModelAndView对象，然后调用业务方法完成业务操作，紧接着设置要跳转的页面，最后将视图返回。假设我们的业务是在对应的页面上打印“HelloSpringMVC”，addObject方法类似于req.serAttribute()方法， 参数是K-V的形式。最后，在spring配置文件中，初始化bean对象</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 初始化控制器bean对象 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">&quot;/hello&quot;</span> <span class="attr">class</span>=<span class="string">&quot;com.springmvc.controller.HelloController&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>想必你还是不是很理解springMVC到底是怎么执行的，那么就对应着具体代码来分析。</p>
-<p>​    首先，我们需要一个前端控制器，而这个前端控制器需要与网页进行交互，因此需要再web.xml文件中配置，而这个类springMVC已经为我们提供好了。并且，有上面的大致分析可以看出，前端控制器需要通过处理器映射、处理器适配对用户的请求进行相关的业务操作，最后再由视图解析对结果进行渲染。那么，通过一个spring的配置文件来实现一系列的操作。</p>
-<p>​    处理器的映射与执行：*<strong>假定用户现在访问的是这个url： <a target="_blank" rel="noopener" href="http://localhost:8080/hello">http://localhost:8080/hello</a>,  那么通过处理器的映射后拿到url，在通过处理器的执行器来查找对应的控制器，即“/hello”*</strong></p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 处理器映射器 前端控制器会根据用户请求，调用处理器映射，根据请求的url来查找对应的Handler</span></span><br><span class="line"><span class="comment">     查到对应的处理器之后，会调用处理器你执行器，查找对应的控制器，并返回给前端控制器--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">class</span>=<span class="string">&quot;org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>​     处理器适配; *<strong>前端控制器会将处理器进行适配，找到符合要求的控制器，即Controller，再由它进行业务操作*</strong></p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 处理器适配器 前端控制器会调用处理器适配，并执行处理器，在将具体的业务交给适配的控制器去处理--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">class</span>=<span class="string">&quot;org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>​    通过上面两个步骤，*<strong>就可以准确的找到对应的控制器，而这个控制器就是spring中配置的这个bean对象*</strong></p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 初始化控制器bean对象 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">&quot;/hello&quot;</span> <span class="attr">class</span>=<span class="string">&quot;com.springmvc.controller.HelloController&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure>
-
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//适配器进过处理后，适配相对应的Controller控制器</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloController</span> <span class="keyword">implements</span> <span class="title">Controller</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ModelAndView <span class="title">handleRequest</span><span class="params">(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="comment">//创建一个ModelAndView实例</span></span><br><span class="line">        ModelAndView modelAndView = <span class="keyword">new</span> ModelAndView();</span><br><span class="line"></span><br><span class="line">        <span class="comment">//具体业务</span></span><br><span class="line">        String result = <span class="string">&quot;HelloSpringMVC&quot;</span>;</span><br><span class="line">        modelAndView.addObject(<span class="string">&quot;msg&quot;</span>, result);</span><br><span class="line">        <span class="comment">//视图跳转到具体的那个页面</span></span><br><span class="line">        <span class="comment">//视图解析器会自动拼接成完整的url</span></span><br><span class="line">        modelAndView.setViewName(<span class="string">&quot;test&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//返回一个模型视图</span></span><br><span class="line">        <span class="keyword">return</span> modelAndView;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>​    <em><strong>HelloController经过操作以后返回了一个ModelAndView实例，上面的代码可以看出当完成业务之后，视图会跳转到指定的页面，而其中只设置了一个”test” ， 很显然，这不是一个完整的页面url，因此，视图解析器需要出场了：</strong></em></p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 视图解析器， 控制器处理相关业务之后，就会返回一个ModelAndView，视图解析器就会对其进行解析--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">class</span>=<span class="string">&quot;org.springframework.web.servlet.view.InternalResourceViewResolver&quot;</span> <span class="attr">id</span>=<span class="string">&quot;internalResourceViewResolver&quot;</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 视图解析器会根据返回的参数，将数据拼接成一个完整的url，返回给用户 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;prefix&quot;</span> <span class="attr">value</span>=<span class="string">&quot;/WEB-INF/jsp/&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;suffix&quot;</span> <span class="attr">value</span>=<span class="string">&quot;.jsp&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>***   视图解析器有两个参数，分别表示的是前缀和后缀，意思就是，视图解析器会自动的帮你拼接url即： /WEB-INF/jsp/test.jsp， 那么现在就是一个完整的url了***</p>
-<p><em><strong>最后就会将结果渲染在视图上</strong></em></p>
-<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/springmvc/20210526152232820.png" alt="结果"></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1412,20 +1364,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">24</span>
+          <span class="site-state-item-count">27</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-count">9</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-count">12</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
