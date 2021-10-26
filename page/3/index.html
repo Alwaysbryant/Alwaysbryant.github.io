@@ -226,8 +226,14 @@
 <p>​    可见性： 一个线程对共享变量进行修改，其他线程必须能够得到最新的值。即volatile关键字可保证可见性。</p>
 <p>​    顺序性： 编译器会优化代码，书写的代码可能和执行的代码顺序不一样，所以要保证程序的顺序，可用volatile来防止指令重排。</p>
 <h5 id="synchronized-和-volatile"><a href="#synchronized-和-volatile" class="headerlink" title="synchronized 和 volatile"></a>synchronized 和 volatile</h5><p>​    synchronized保证线程同步，可以修饰类，方法，代码块，修饰类和静态方法则是给类上锁，修饰方法可以给对象上锁，修饰代码块可以指定加锁对象，可以是一个变量、对象，也可以是一个类。而volatile更加轻量级，只能修饰变量。</p>
-<p>​    volatile只能保证数据的可见性，而不能保证原子性。</p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/04/15/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -311,12 +317,14 @@
 
 <p>当启动程序时，会开辟一块主方法的栈，而当执行到add方法时，会在开辟一块区域。而执行完毕之后会销毁，最后直至程序结束</p>
 <p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/jvm/stack.PNG" alt="stack"></p>
-<p>在栈空间，会出现栈溢出（StackOverflowError），即栈空间被耗尽，会出现异常。当写一个递归程序没有规定出口，就会不停的开辟新栈，最后就会导致栈溢出。</p>
-<h5 id="本地方法栈"><a href="#本地方法栈" class="headerlink" title="本地方法栈"></a>本地方法栈</h5><p>​    是java调用native方法所开辟的栈空间。为native所服务。</p>
-<h5 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h5><p>​    程序计数器是每个线程私有的，程序计数器保证程序的执行流程，当线程切换时，程序计数器可以保证程序能恢复到正确的执行位置。</p>
-<h5 id="堆"><a href="#堆" class="headerlink" title="堆"></a>堆</h5><p>​    堆是整个内存结构中，分配空间最大的一部分，堆空间主要是存放对象实例，几乎所有的对象实例、数组都在堆中分配内存。堆也是垃圾回收的主要区域。当堆内存满了以后，会出现OutOfMemoryError异常。表示堆内存满了。</p>
-<h5 id="方法区"><a href="#方法区" class="headerlink" title="方法区"></a>方法区</h5><p>​    方法区，主要是用来存储类的加载信息，静态方法，字符串常量池也属于方法区，方法区好像在元空间中，这个概念一直都很模糊。</p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/03/30/java%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -400,10 +408,14 @@
 
 <p>​    上面算法可以达到题目要求，但是时间复杂度比较高，两层循环，时间复杂度为O(n^2)。可以优化</p>
 <h4 id="1-2-使用map"><a href="#1-2-使用map" class="headerlink" title="1.2 使用map"></a>1.2 使用map</h4><p>​    使用一个map来存放数据，for循环遍历数组，并判断当前遍历的元素，target-当前元素的值，是否存在在map中，如果存在，说明找到了两个数相加 == target。如果不存在，就放入map中</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span>[] twoSum(<span class="keyword">int</span> target, <span class="keyword">int</span>[] nums) &#123;</span><br><span class="line">        Map&lt;Integer, Integer&gt; map = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nums.length; i++) &#123;</span><br><span class="line">            <span class="keyword">int</span> num = target - nums[i];</span><br><span class="line">            <span class="keyword">if</span> (map.containsKey(num)) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">new</span> <span class="keyword">int</span>[] &#123;map.get(num), i&#125;;</span><br><span class="line">            &#125;</span><br><span class="line">            map.put(nums[i], i);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>​    通过一个map就可以做到，从而时间复杂度降低到O（n）。</p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/03/11/leetcode01/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -484,6 +496,14 @@
 <hr>
 <p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/cat/twocats2.jpg" alt="cat"></p>
 
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/01/12/life01/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -566,7 +586,14 @@
 <p>给他取名叫做 柴富富。。。</p>
 <p>富富回喵星了。。。。</p>
 <p>希望来生，它可以做一只被人疼爱的猫，不用担心吃喝。。。</p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/09/18/life/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -648,15 +675,14 @@
 <p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/cat/middlesfl.jpg" alt="cat"></p>
 <p>四五个月。。。</p>
 <p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/cat/IMG_0009%2820201218-012634%29.JPG" alt="cat"></p>
-<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/cat/IMG_0011%2820210309-113607%29.JPG" alt="cat"></p>
-<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/cat/sfl.jpg" alt="cat"></p>
-<p>后来。。。就长大了，不让他受妈妈当时的苦了，到年龄就绝育了。。。</p>
-<hr>
-<p>在纸箱子里玩逗猫棒</p>
-<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/cat/IMG_0018%2820210309-113607%29.JPG" alt="cat"></p>
-<p>躲在纸袋子里面</p>
-<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/cat/IMG_0626.JPG" alt="cat"></p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/08/15/cat/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -736,6 +762,14 @@
 <p>那时候在武汉，住在小小的单间里面，估计也很无聊吧。。。等着人回家，自己晒太阳。</p>
 <p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/cat/IMG_0256.JPG" alt="cat"></p>
 
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/04/12/cats/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
