@@ -164,6 +164,98 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/10/20/%E4%B8%89%E6%95%B0%E4%B9%8B%E5%92%8C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
+      <meta itemprop="name" content="swaggyW">
+      <meta itemprop="description" content="永远不要放弃">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="swaggyW's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/10/20/%E4%B8%89%E6%95%B0%E4%B9%8B%E5%92%8C/" class="post-title-link" itemprop="url">三数之和</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-10-20 21:13:01" itemprop="dateCreated datePublished" datetime="2021-10-20T21:13:01+08:00">2021-10-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-11-03 21:33:34" itemprop="dateModified" datetime="2021-11-03T21:33:34+08:00">2021-11-03</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/leetcode/" itemprop="url" rel="index"><span itemprop="name">leetcode</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h4 id="三数之和"><a href="#三数之和" class="headerlink" title="三数之和"></a>三数之和</h4><p>​     leetcode上面的一道排序算法题。</p>
+<pre><code>给你一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素 a，b，c ，使得 a + b + c = 0 ？请你找出所有和为 0 且不重复的三元组。
+
+注意：答案中不可以包含重复的三元组。
+</code></pre>
+<p>思路：</p>
+<p>​    先将数组进行升序排序。。。</p>
+<p>​    一个数组中三个元素相加为0，可以通过三个指针来进行判断。一个指针i从数组第一个元素开始自增。另外两个指针分别为left、right。</p>
+<p>​    让left最开始指向i的下一个元素，即<strong>left=i+1</strong>。right指向最后，即<strong>right=nums.length-1</strong>。</p>
+<p>​     判断此时 result = nums[i] + nums[right] + nums[left] 的值。如果result&gt;0,由于数组是升序排序，那么说明要让result变小，则让right前移。如果result&lt;0， 则让left右移，让值变大。 总而言之，就是让和趋近于0，直至等于0。一次循环中，直到left&gt;=right，则循环结束。<strong>这就是为什么要让数组排序</strong></p>
+<p>​    还有一个问题就是需要去重复，因为有可能会得到重复的结果。那么在下标不越界的情况下，让当前指针与前一个或者后一个值进行比较，如果相同，则结束本次循环。</p>
+<p>​     大概就是这个思路。代码如下</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/10/20/%E4%B8%89%E6%95%B0%E4%B9%8B%E5%92%8C/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/10/12/zookeeper%E4%B8%80%E8%87%B4%E6%80%A7/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -945,97 +1037,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/09/redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
-      <meta itemprop="name" content="swaggyW">
-      <meta itemprop="description" content="永远不要放弃">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="swaggyW's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/07/09/redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/" class="post-title-link" itemprop="url">redis分布式锁</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-07-09 15:23:07" itemprop="dateCreated datePublished" datetime="2021-07-09T15:23:07+08:00">2021-07-09</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-10-09 18:18:58" itemprop="dateModified" datetime="2021-10-09T18:18:58+08:00">2021-10-09</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>​    以抢购商品为例子，一步步分析redis实现分布式锁的过程。</p>
-<p>​    在redis中设置商品数量  set goods:01 100 。 假设有100件商品。</p>
-<h4 id="单机版"><a href="#单机版" class="headerlink" title="单机版"></a>单机版</h4><p>​    假设下面这个简单的程序,就是一个很简单的逻辑。从Redis中获取数量，如果数量大于0，就可以购买，否则购买不了。</p>
-<p>​    </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Autowired</span></span><br><span class="line"><span class="keyword">private</span> StringRedisTemplate redisTemplate;</span><br><span class="line"></span><br><span class="line"><span class="meta">@GetMapping(&quot;/buy&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">buySales</span><span class="params">()</span> </span>&#123;</span><br><span class="line"><span class="comment">//从redis中获取商品的数量</span></span><br><span class="line">        String result = redisTemplate.opsForValue().get(<span class="string">&quot;goods:01&quot;</span>);</span><br><span class="line">        <span class="keyword">int</span> nums = (result == <span class="keyword">null</span>) ? <span class="number">0</span> : Integer.parseInt(result);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (nums &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="comment">//如果还有，商品数量-1</span></span><br><span class="line">            <span class="keyword">int</span> currentNums = nums - <span class="number">1</span>;</span><br><span class="line">            redisTemplate.opsForValue().set(<span class="string">&quot;goods:01&quot;</span>, String.valueOf(currentNums));</span><br><span class="line">            System.out.println(<span class="string">&quot;成功买到商品，还剩余 &quot;</span> + currentNums + <span class="string">&quot; 件&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;成功买到商品， 还剩 &quot;</span> + currentNums + <span class="string">&quot;件&quot;</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;购买失败、、、、&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span>  <span class="string">&quot;购买商品失败，因为xxxx原因......&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>​    只有一个客户端，来进行抢购商品。在多线程的条件下进行访问，会出现超卖和重复卖等问题。因此，对于多线程的单击模式下，我们可以通过锁来实现。可以使用synchronized，或者reentrantlock，这样可以解决在多个线程访问的情况下，保证同一时刻，只有一个线程拿到锁。其他线程阻塞。代码如下，把代码放在一个同步代码块中。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@GetMapping(&quot;/buy&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">buySales</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">            <span class="comment">//从redis中获取商品的数量</span></span><br><span class="line">            String result = redisTemplate.opsForValue().get(<span class="string">&quot;goods:01&quot;</span>);</span><br><span class="line">            <span class="keyword">int</span> nums = (result == <span class="keyword">null</span>) ? <span class="number">0</span> : Integer.parseInt(result);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (nums &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="comment">//如果还有，商品数量-1</span></span><br><span class="line">                <span class="keyword">int</span> currentNums = nums - <span class="number">1</span>;</span><br><span class="line">                redisTemplate.opsForValue().set(<span class="string">&quot;goods:01&quot;</span>, String.valueOf(currentNums));</span><br><span class="line">                System.out.println(<span class="string">&quot;成功买到商品，还剩余 &quot;</span> + currentNums + <span class="string">&quot; 件&quot;</span>);</span><br><span class="line">                <span class="keyword">return</span> <span class="string">&quot;成功买到商品， 还剩 &quot;</span> + currentNums + <span class="string">&quot;件&quot;</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                System.out.println(<span class="string">&quot;购买失败、、、、&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span>  <span class="string">&quot;购买商品失败，因为xxxx原因......&quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p>​    在实际中，在高并发的情况下，肯定不止一台机器，那如果是有多个机器在提供这一服务呢？</p>
-<h4 id="分布式服务"><a href="#分布式服务" class="headerlink" title="分布式服务"></a>分布式服务</h4>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/07/09/redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1107,7 +1108,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-count">28</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

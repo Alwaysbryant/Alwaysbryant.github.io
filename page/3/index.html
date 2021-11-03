@@ -164,6 +164,98 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/04/15/%E5%A0%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
+      <meta itemprop="name" content="swaggyW">
+      <meta itemprop="description" content="永远不要放弃">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="swaggyW's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/04/15/%E5%A0%86/" class="post-title-link" itemprop="url">堆</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-04-15 17:36:48" itemprop="dateCreated datePublished" datetime="2021-04-15T17:36:48+08:00">2021-04-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-10-12 18:39:58" itemprop="dateModified" datetime="2021-10-12T18:39:58+08:00">2021-10-12</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>​    主要记录一下，堆内存的结构，以及垃圾回收。</p>
+<p>​    堆由于存放的是对象实例，对象主要是存放数据，所以当一个对象没有使用、或者没有引用指向它时，它就有可能会被垃圾回收器回收。</p>
+<p>​    在jdk1.8之后，堆区主要有三个区域，新生代、老年代、元空间。</p>
+<p>​    新生代包括Eden区(伊甸园区)、 survivor0区（from区）、survivor1区（to区）。</p>
+<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/jvm/gc.PNG" alt="gc"></p>
+<p>ps:  元空间在jdk1.7之前叫做永久代，元空间中主要存放的是java自带的类信息，如rt.jar包下的类，常用的集合框架等等…</p>
+<p>​    因此，垃圾回收主要发生在前面两个区域。首先要说明的有两点：</p>
+<ol>
+<li>对于大部分对象，当它被创建并且在堆中分配内存时，这个对象都是在伊甸园区（后面都说新生代）；</li>
+<li> 对于大对象会直接进入老年代。像字符串、数组等。这样是为了防止对象复制而降低效率。</li>
+</ol>
+<h5 id="gc"><a href="#gc" class="headerlink" title="gc"></a>gc</h5><p>  大部分的对象使用完毕之后就会被回收，因此在新生代发生gc是十分频繁的。当新生代满了之后，就会发生一次young gc，一次ygc过后，存活下来的对象会被复制进入from区，当新生代发生第二次ygc后，所有存活下来的对象将会被复制到to区，此时，from区会清空，而from区和to区会角色互换。即两者的名字会交换。就是要保证to区是空的。当进入一次幸存者区时，这些对象的年龄就会+1，而当一个对象的年龄达到15岁时，就会进入老年代。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/04/15/%E5%A0%86/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/04/15/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -855,7 +947,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-count">28</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
