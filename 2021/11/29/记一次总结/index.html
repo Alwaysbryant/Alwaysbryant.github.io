@@ -20,20 +20,20 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="redis的持久化​    redis相比传统的memcache优势之一，即redis支持持久化操作。这也保证了redis挂掉之后，当重启redis的时候，可以恢复数据。 ​    redis的配置文件 redis.conf 中 也已经标明了有两种持久化的机制，RDB和AOF， 这两种机制各有不同，而redis默认开启的是RDB，如果想要开启AOF， 可以在配置文件中，将appendonly 改为">
+  <meta name="description" content="上周终于又有了一次面试机会。可惜第二面没过，来总结一下。 第一面 ​    第一面问的问题还算简单。可能我自己写的项目和公司没什么契合度，所以面试小哥没问项目的任何问题。 ​    问的问题大致如下：  直接从spring入手，问了我spring处理请求的流程？ 当时我没有答出来。。。 事后发现不就是springMVC的执行流程吗？  当时真的太紧张了，没有想到。。。客户端发送一次请求，sprin">
 <meta property="og:type" content="article">
-<meta property="og:title" content="redis持久化机制">
-<meta property="og:url" content="http://example.com/2021/10/09/redis%E6%8C%81%E4%B9%85%E5%8C%96%E6%9C%BA%E5%88%B6/index.html">
+<meta property="og:title" content="记一次总结">
+<meta property="og:url" content="http://example.com/2021/11/29/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%80%BB%E7%BB%93/index.html">
 <meta property="og:site_name" content="swaggyW&#39;s Blog">
-<meta property="og:description" content="redis的持久化​    redis相比传统的memcache优势之一，即redis支持持久化操作。这也保证了redis挂掉之后，当重启redis的时候，可以恢复数据。 ​    redis的配置文件 redis.conf 中 也已经标明了有两种持久化的机制，RDB和AOF， 这两种机制各有不同，而redis默认开启的是RDB，如果想要开启AOF， 可以在配置文件中，将appendonly 改为">
+<meta property="og:description" content="上周终于又有了一次面试机会。可惜第二面没过，来总结一下。 第一面 ​    第一面问的问题还算简单。可能我自己写的项目和公司没什么契合度，所以面试小哥没问项目的任何问题。 ​    问的问题大致如下：  直接从spring入手，问了我spring处理请求的流程？ 当时我没有答出来。。。 事后发现不就是springMVC的执行流程吗？  当时真的太紧张了，没有想到。。。客户端发送一次请求，sprin">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2021-10-09T04:40:34.000Z">
-<meta property="article:modified_time" content="2021-10-09T05:15:59.654Z">
+<meta property="article:published_time" content="2021-11-29T08:28:57.000Z">
+<meta property="article:modified_time" content="2021-11-29T09:09:22.550Z">
 <meta property="article:author" content="swaggyW">
-<meta property="article:tag" content="redis">
+<meta property="article:tag" content="面试">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://example.com/2021/10/09/redis%E6%8C%81%E4%B9%85%E5%8C%96%E6%9C%BA%E5%88%B6/">
+<link rel="canonical" href="http://example.com/2021/11/29/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%80%BB%E7%BB%93/">
 
 
 <script id="page-configurations">
@@ -46,7 +46,7 @@
   };
 </script>
 
-  <title>redis持久化机制 | swaggyW's Blog</title>
+  <title>记一次总结 | swaggyW's Blog</title>
   
 
 
@@ -168,7 +168,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/10/09/redis%E6%8C%81%E4%B9%85%E5%8C%96%E6%9C%BA%E5%88%B6/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/29/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%80%BB%E7%BB%93/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
@@ -181,7 +181,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          redis持久化机制
+          记一次总结
         </h1>
 
         <div class="post-meta">
@@ -192,7 +192,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-10-09 12:40:34 / 修改时间：13:15:59" itemprop="dateCreated datePublished" datetime="2021-10-09T12:40:34+08:00">2021-10-09</time>
+              <time title="创建时间：2021-11-29 16:28:57 / 修改时间：17:09:22" itemprop="dateCreated datePublished" datetime="2021-11-29T16:28:57+08:00">2021-11-29</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -200,7 +200,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
+                  <a href="/categories/%E9%9D%A2%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">面试</span></a>
                 </span>
             </span>
 
@@ -222,24 +222,57 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h3 id="redis的持久化"><a href="#redis的持久化" class="headerlink" title="redis的持久化"></a>redis的持久化</h3><p>​    redis相比传统的memcache优势之一，即redis支持持久化操作。这也保证了redis挂掉之后，当重启redis的时候，可以恢复数据。</p>
-<p>​    redis的配置文件 redis.conf 中 也已经标明了有两种持久化的机制，RDB和AOF， 这两种机制各有不同，而redis默认开启的是RDB，如果想要开启AOF， 可以在配置文件中，将appendonly 改为yes。</p>
-<h5 id="RDB"><a href="#RDB" class="headerlink" title="RDB"></a>RDB</h5><p>​    RDB，snapshotting，即快照。在指定的时间间隔内将内存中的数据集快照写入磁盘中。而恢复的时候会将快照文件直接读到内存。</p>
-<p>​    备份是如何进行的？ redis会单独fork一个子进程来进行持久化。将数据先写入一个临时文件中，等到持久化过程结束了，在用这个临时文件替换上一次持久化的临时文件。整个过程，redis的主进程都不会IO，所以可以保证性能，可以保证高效。 但是由于每隔一段时间进行持久化，所以如果redis挂掉了，那么最后一次持久化会导致数据丢失。</p>
-<p>​    注： fork的作用是复制一个与当前进程一样的进程，变量、环境变量、程序计数器等都是一致的。fork出来的进程是一个新的进程，来作为原进程的子进程。</p>
-<p>​    redis是默认开启的，有如下配置</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">save 900 1           #在900秒(15分钟)之后，如果至少有1个key发生变化，Redis就会自动触发BGSAVE命令创建快照。</span><br><span class="line"></span><br><span class="line">save 300 10          #在300秒(5分钟)之后，如果至少有10个key发生变化，Redis就会自动触发BGSAVE命令创建快照。</span><br><span class="line"></span><br><span class="line">save 60 10000        #在60秒(1分钟)之后，如果至少有10000个key发生变化，Redis就会自动触发BGSAVE命令创建快照。</span><br></pre></td></tr></table></figure>
-
-<p>注： bgsave命令： save命令只管保存，所以在进行save时，是全部阻塞的，而bgsave可以在后台异步操作。快照可以在后台相应客户端的请求。</p>
-<h5 id="AOF"><a href="#AOF" class="headerlink" title="AOF"></a>AOF</h5><p>​    AOF， appendonly， 追加，以日志的形式来记录每个写操作，并且会把redis所有的写指令记录下来，只可以追加文件，不可以改写文件。 当redis启动后，就会根据日志里面的指令，从前到后执行一次来恢复数据。</p>
-<p>​    持久化流程。1.写命令会被追加到AOF的缓冲区； 2. 缓冲区会根据持久化策略来操作sync同步到磁盘的AOF文件中； 3.当AOF文件大小超过重写策略或手动重写时，会对AOF文件进行重写； 4.当redis服务重启时，会重新加载aof文件来恢复数据。</p>
-<p>​    当AOF和RDB都开启的时候，系统会优先取AOF的数据。这是因为AOF不会导致数据丢失。</p>
-<p>​    AOF同步频率设置。在持久化流程中，缓冲区会根据持久化策略进行同步。主要有三种策略。</p>
-<p>​    appendfsync always  始终同步，即每次有写入操作都会立刻记录到aof文件中，可想而知，性能会很差，但是能保证数据不丢失。</p>
-<p>​    appendfsync everysec 每秒同步， 不过这种方式如果某一时刻redis挂掉，那么那一秒的数据就会丢失；</p>
-<p>​    appendfsync no 不主动同步，交给操作系统来做。</p>
-<h4 id="如何使用RDB和AOF"><a href="#如何使用RDB和AOF" class="headerlink" title="如何使用RDB和AOF"></a>如何使用RDB和AOF</h4><p>​    AOF更加稳健，丢失数据的概率相对较低。但是需要占用更多的磁盘空间，需要写入同步，也会降低性能。用哪个更好呢？</p>
-<p>​    官方推荐两个都开启。</p>
+        <p>上周终于又有了一次面试机会。可惜第二面没过，来总结一下。</p>
+<p>第一面</p>
+<p>​    第一面问的问题还算简单。可能我自己写的项目和公司没什么契合度，所以面试小哥没问项目的任何问题。</p>
+<p>​    问的问题大致如下：</p>
+<ol>
+<li><p>直接从spring入手，问了我spring处理请求的流程？</p>
+<p>当时我没有答出来。。。 事后发现不就是springMVC的执行流程吗？  当时真的太紧张了，没有想到。。。客户端发送一次请求，springMVC都会经过dispatchServlet来进行分发，先根据mapper映射url，找到对应的处理器，然后返回给dispatchServlet，在交给适配器进行适配，并找到对应的控制器，进行业务的执行，最后由视图模型进行渲染，返回给页面。。。</p>
+</li>
+</ol>
+<p>​    2.spring的bean创建过程？</p>
+<p>​        主要是四个方法， getBean（） – 从IOC容器中获取正在创建的bean，如果获取不到，进入bean定义</p>
+<p>​                                        doCreateBean（）  – 创建bean</p>
+<p>​                                         populate（）   –具体方法名忘记了， 对属性进行注入</p>
+<p>​                                         add（）  — 加入到容器中</p>
+<p>​     大致是这个流程。。。</p>
+<ol start="3">
+<li><p>循环依赖？</p>
+<p>没啥好说的。。。。都是spring源码</p>
+<ol start="4">
+<li><p>redis的持久化方式，已经两种方式的区别。。</p>
+<p>正常回答。。。 rdb和aof rdb的持久化频率，在redis.conf中有写到。aof指令追加。。其实还是挺期待多问问redis方面的问题的，分布式锁啊，数据类型，应用场景啥的。。。可惜没问</p>
+</li>
+<li><p>hashmap的底层以及红黑树的最大高度差，红黑树既然查找和插入效率都为logN为什么还需要链表。</p>
+<p>红黑树的特点： 同一路径不允许出现连续红， 从叶子节点出发每一条路径上的黑色节点都必须相同，所以对于一颗高度为k的红黑树，最大高度差是k/2，可能考虑到红黑树需要自旋。但是第二个问题确实答得不好，</p>
+<p>当链表节点个数达到8时，就会转换成红黑树，而当节点到6之后，就会转变成链表，链表的平均时间复杂度是N/2， 当节点个数为8时，此时时间复杂度红黑树为3，链表为4， 而当节点为6时，前者为lg6，后者为3，但是考虑到红黑树需要通过自旋来保证左右子树的节点相对平衡，并且为了防止红黑树和链表一直频繁转换吧。。。这都是我面试完查得资料。。</p>
+</li>
+</ol>
+</li>
+</ol>
+<p>​    后面就都是闲聊了。。。爱好啊，问我养猫的事。。。挺愉快的，面试小哥挺年轻的，挺亲和的。。但是面试完之后其实自己还是挺失落的，，觉得自己可能没啥希望了。。。中午饭也没吃。</p>
+<p>   不过下午回到家之后，，，四点左右还是收到了二面的通知。。。</p>
+<p>第二面</p>
+<p>​    第二面是第二天早上，其实还是挺希望是现场面的，这样可能我会状态好一点，不过可惜是视频面，刚好结石发作了，有点小疼。。早上起来就有一种不好的预感，并且也不知道是技术面还是hr面。</p>
+<p>​    因为是机械专业的，，问了一些关于机械的问题</p>
+<p>​    觉得我的上一份工作和我的专业是否契合？</p>
+<p>​    其实不算契合，，，毕竟是做半导体的，但是机械这个专业就业面还是挺广的，可以做结构设计、可以做设备、非标件，，</p>
+<p>​    然后问了我非标件能展开讲讲吗？</p>
+<p>​     非标件就是没有标准的零件。。。 对于标准件，螺栓螺钉螺母啥的，这些都是有生产标准的，而对于非标件我们需要自己来设计零件，用来满足实际工作的需要，如汽车的一些冲压件，这个时候就需要我们自己进行设计加工，需要用到工业绘图软件。。。如CAD啊、以及三维建模软件，当然后面这些我没说，因为既然说到非标件，零件的设计肯定需要工业绘图软件，这是自然而然的，也没啥好说的。</p>
+<p>​    问到了soildworks，尺寸标注和约束了解吗？</p>
+<p>​    soildworks的使用确实在大学期间用的还是挺多的，毕业设计也用到了，，但是这将近一年都沉迷java，真的都忘记了，你让我现在用还会用。。当时直接说很久了，确实忘记怎么使用了。。。</p>
+<p>   后来想了想，对于一个草图，我们如果不进行约束，也就是尺寸的标注，那么这个草图是没有被完全定义的，因为他会因为我们的操作而改变形状和大小。所以我们需要对草图进行约束。。。这些理论确实已经忘记的一干二净了。。。</p>
+<p>   那么联系到java。。现在如果需要开发一个在线的三维建模网站，，java作为服务器。如果用户需要换一条直线，两点确定一条直线。。那么可以将这两个点的坐标传给服务器，服务器经过计算得出两点的距离，并返回给页面，当用户画完后，会出现弹窗，一是回显距离，二是可以交给用户来指定尺寸，而服务器做相应的业务。这样可以自发的完成对尺寸的标注。当然实际开发肯定比这个复杂的多得多。只是随便就一个例子。。</p>
+<p>   然后后面都是一些open的问题。</p>
+<p>   如果我们公司给了你offer，但是薪资和你其他offer一样，你会选择我们公司吗</p>
+<p>   当然会啊。。。我说了不管从公司规模、环境、发展前景来看，都觉得贵公司更好。。。</p>
+<p>   还有一些别的问题。。。。</p>
+<p>整个面试过程不超过十五分钟。面试之前就感觉自己可能没啥希望了。。。面试完之后更觉得自己没啥希望了。。。</p>
+<p>   首先是soildworks确实忘记了。。。其次是感觉自己那些open的问题回答的确实不够好，我非常想进这家公司，但是我无脑说自己会选择贵公司，这样写的好蠢。。。也太假了。。。</p>
+<p>​    人生就是这样，没办法，当你特别想去一家公司或者特别想拥有一份工作的时候，有时候你就是得不到。。。没办法。。。</p>
+<p>   life is fxxking movie…让我自己好好疗伤。。。难受。</p>
+<p>PS： 自学转行，找工作太难了，，连个面试的机会都难。。。哭了。。</p>
 
     </div>
 
@@ -261,7 +294,7 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/redis/" rel="tag"># redis</a>
+              <a href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag"># 面试</a>
           </div>
 
         
@@ -270,13 +303,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2021/10/09/redis%E7%9A%84%E8%BF%87%E6%9C%9F%E5%88%A0%E9%99%A4%E7%AD%96%E7%95%A5%E5%8F%8A%E6%B7%98%E6%B1%B0%E6%9C%BA%E5%88%B6/" rel="prev" title="redis的过期删除策略及淘汰机制">
-      <i class="fa fa-chevron-left"></i> redis的过期删除策略及淘汰机制
+    <a href="/2021/10/20/%E6%9C%80%E6%8E%A5%E8%BF%91%E7%9A%84%E4%B8%89%E6%95%B0%E4%B9%8B%E5%92%8C/" rel="prev" title="最接近的三数之和">
+      <i class="fa fa-chevron-left"></i> 最接近的三数之和
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2021/10/11/%E7%BA%BF%E7%A8%8B%E6%B1%A0/" rel="next" title="线程池">
-      线程池 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -335,7 +365,6 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#redis%E7%9A%84%E6%8C%81%E4%B9%85%E5%8C%96"><span class="nav-text">redis的持久化</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#RDB"><span class="nav-text">RDB</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#AOF"><span class="nav-text">AOF</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8RDB%E5%92%8CAOF"><span class="nav-text">如何使用RDB和AOF</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
