@@ -20,17 +20,17 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="上周终于又有了一次面试机会。可惜第二面没过，来总结一下。 第一面 ​    第一面问的问题还算简单。可能我自己写的项目和公司没什么契合度，所以面试小哥没问项目的任何问题。 ​    问的问题大致如下：  直接从spring入手，问了我spring处理请求的流程？ 当时我没有答出来。。。 事后发现不就是springMVC的执行流程吗？  当时真的太紧张了，没有想到。。。客户端发送一次请求，sprin">
+  <meta name="description" content="​    问的问题大致如下：  直接从spring入手，问了我spring处理请求的流程？ 当时我没有答出来。。。 事后发现不就是springMVC的执行流程吗？  当时真的太紧张了，没有想到。。。客户端发送一次请求，springMVC都会经过dispatchServlet来进行分发，先根据mapper映射url，找到对应的处理器，然后返回给dispatchServlet，在交给适配器进行适配，并">
 <meta property="og:type" content="article">
 <meta property="og:title" content="记一次总结">
 <meta property="og:url" content="http://example.com/2021/11/29/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%80%BB%E7%BB%93/index.html">
 <meta property="og:site_name" content="swaggyW&#39;s Blog">
-<meta property="og:description" content="上周终于又有了一次面试机会。可惜第二面没过，来总结一下。 第一面 ​    第一面问的问题还算简单。可能我自己写的项目和公司没什么契合度，所以面试小哥没问项目的任何问题。 ​    问的问题大致如下：  直接从spring入手，问了我spring处理请求的流程？ 当时我没有答出来。。。 事后发现不就是springMVC的执行流程吗？  当时真的太紧张了，没有想到。。。客户端发送一次请求，sprin">
+<meta property="og:description" content="​    问的问题大致如下：  直接从spring入手，问了我spring处理请求的流程？ 当时我没有答出来。。。 事后发现不就是springMVC的执行流程吗？  当时真的太紧张了，没有想到。。。客户端发送一次请求，springMVC都会经过dispatchServlet来进行分发，先根据mapper映射url，找到对应的处理器，然后返回给dispatchServlet，在交给适配器进行适配，并">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-11-29T08:28:57.000Z">
-<meta property="article:modified_time" content="2021-11-29T09:09:24.000Z">
+<meta property="article:modified_time" content="2022-11-28T13:05:26.170Z">
 <meta property="article:author" content="swaggyW">
-<meta property="article:tag" content="面试">
+<meta property="article:tag" content="总结">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="http://example.com/2021/11/29/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%80%BB%E7%BB%93/">
@@ -136,7 +136,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">32</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">34</span></a>
 
   </li>
   </ul>
@@ -192,17 +192,23 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-11-29 16:28:57 / 修改时间：17:09:24" itemprop="dateCreated datePublished" datetime="2021-11-29T16:28:57+08:00">2021-11-29</time>
+              <time title="创建时间：2021-11-29 16:28:57" itemprop="dateCreated datePublished" datetime="2021-11-29T16:28:57+08:00">2021-11-29</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-11-28 21:05:26" itemprop="dateModified" datetime="2022-11-28T21:05:26+08:00">2022-11-28</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E9%9D%A2%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">面试</span></a>
+                  <a href="/categories/%E6%80%BB%E7%BB%93/" itemprop="url" rel="index"><span itemprop="name">总结</span></a>
                 </span>
             </span>
 
@@ -224,10 +230,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>上周终于又有了一次面试机会。可惜第二面没过，来总结一下。</p>
-<p>第一面</p>
-<p>​    第一面问的问题还算简单。可能我自己写的项目和公司没什么契合度，所以面试小哥没问项目的任何问题。</p>
-<p>​    问的问题大致如下：</p>
+        <p>​    问的问题大致如下：</p>
 <ol>
 <li><p>直接从spring入手，问了我spring处理请求的流程？</p>
 <p>当时我没有答出来。。。 事后发现不就是springMVC的执行流程吗？  当时真的太紧张了，没有想到。。。客户端发送一次请求，springMVC都会经过dispatchServlet来进行分发，先根据mapper映射url，找到对应的处理器，然后返回给dispatchServlet，在交给适配器进行适配，并找到对应的控制器，进行业务的执行，最后由视图模型进行渲染，返回给页面。。。</p>
@@ -241,40 +244,22 @@
 <p>​     大致是这个流程。。。</p>
 <ol start="3">
 <li><p>循环依赖？</p>
-<p>没啥好说的。。。。都是spring源码</p>
+<p>spring三级缓存</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DefaultSingletonBeanRegistry</span> <span class="keyword">extends</span> <span class="title">SimpleAliasRegistry</span> <span class="keyword">implements</span> <span class="title">SingletonBeanRegistry</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/** 一级缓存，bean初始化完成存放*/</span></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> Map&lt;String, Object&gt; singletonObjects = <span class="keyword">new</span> ConcurrentHashMap&lt;&gt;(<span class="number">256</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">/** 三级缓存，bean实例化完成存放 */</span></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> Map&lt;String, ObjectFactory&lt;?&gt;&gt; singletonFactories = <span class="keyword">new</span> HashMap&lt;&gt;(<span class="number">16</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">/** 二级缓存 */</span></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">final</span> Map&lt;String, Object&gt; earlySingletonObjects = <span class="keyword">new</span> HashMap&lt;&gt;(<span class="number">16</span>);</span><br></pre></td></tr></table></figure>
+
+
+
 <ol start="4">
 <li><p>redis的持久化方式，已经两种方式的区别。。</p>
-<p>正常回答。。。 rdb和aof rdb的持久化频率，在redis.conf中有写到。aof指令追加。。其实还是挺期待多问问redis方面的问题的，分布式锁啊，数据类型，应用场景啥的。。。可惜没问</p>
+<p>正常回答。。。 rdb和aof rdb的持久化频率，在redis.conf中有写到。aof指令追加。。</p>
 </li>
 <li><p>hashmap的底层以及红黑树的最大高度差，红黑树既然查找和插入效率都为logN为什么还需要链表。</p>
 <p>红黑树的特点： 同一路径不允许出现连续红， 从叶子节点出发每一条路径上的黑色节点都必须相同，所以对于一颗高度为k的红黑树，最大高度差是k/2，可能考虑到红黑树需要自旋。但是第二个问题确实答得不好，</p>
-<p>当链表节点个数达到8时，就会转换成红黑树，而当节点到6之后，就会转变成链表，链表的平均时间复杂度是N/2， 当节点个数为8时，此时时间复杂度红黑树为3，链表为4， 而当节点为6时，前者为lg6，后者为3，但是考虑到红黑树需要通过自旋来保证左右子树的节点相对平衡，并且为了防止红黑树和链表一直频繁转换吧。。。这都是我面试完查得资料。。</p>
+<p>当链表节点个数达到8时，就会转换成红黑树，而当节点到6之后，就会转变成链表，链表的平均时间复杂度是N/2， 当节点个数为8时，此时时间复杂度红黑树为3，链表为4， 而当节点为6时，前者为lg6，后者为3，但是考虑到红黑树需要通过自旋来保证左右子树的节点相对平衡，并且为了防止红黑树和链表一直频繁转换</p>
 </li>
 </ol>
 </li>
 </ol>
-<p>​    后面就都是闲聊了。。。爱好啊，问我养猫的事。。。挺愉快的，面试小哥挺年轻的，挺亲和的。。但是面试完之后其实自己还是挺失落的，，觉得自己可能没啥希望了。。。中午饭也没吃。</p>
-<p>   不过下午回到家之后，，，四点左右还是收到了二面的通知。。。</p>
-<p>第二面</p>
-<p>​    第二面是第二天早上，其实还是挺希望是现场面的，这样可能我会状态好一点，不过可惜是视频面，刚好结石发作了，有点小疼。。早上起来就有一种不好的预感，并且也不知道是技术面还是hr面。</p>
-<p>​    因为是机械专业的，，问了一些关于机械的问题</p>
-<p>​    觉得我的上一份工作和我的专业是否契合？</p>
-<p>​    其实不算契合，，，毕竟是做半导体的，但是机械这个专业就业面还是挺广的，可以做结构设计、可以做设备、非标件，，</p>
-<p>​    然后问了我非标件能展开讲讲吗？</p>
-<p>​     非标件就是没有标准的零件。。。 对于标准件，螺栓螺钉螺母啥的，这些都是有生产标准的，而对于非标件我们需要自己来设计零件，用来满足实际工作的需要，如汽车的一些冲压件，这个时候就需要我们自己进行设计加工，需要用到工业绘图软件。。。如CAD啊、以及三维建模软件，当然后面这些我没说，因为既然说到非标件，零件的设计肯定需要工业绘图软件，这是自然而然的，也没啥好说的。</p>
-<p>​    问到了soildworks，尺寸标注和约束了解吗？</p>
-<p>​    soildworks的使用确实在大学期间用的还是挺多的，毕业设计也用到了，，但是这将近一年都沉迷java，真的都忘记了，你让我现在用还会用。。当时直接说很久了，确实忘记怎么使用了。。。</p>
-<p>   后来想了想，对于一个草图，我们如果不进行约束，也就是尺寸的标注，那么这个草图是没有被完全定义的，因为他会因为我们的操作而改变形状和大小。所以我们需要对草图进行约束。。。这些理论确实已经忘记的一干二净了。。。</p>
-<p>   那么联系到java。。现在如果需要开发一个在线的三维建模网站，，java作为服务器。如果用户需要换一条直线，两点确定一条直线。。那么可以将这两个点的坐标传给服务器，服务器经过计算得出两点的距离，并返回给页面，当用户画完后，会出现弹窗，一是回显距离，二是可以交给用户来指定尺寸，而服务器做相应的业务。这样可以自发的完成对尺寸的标注。当然实际开发肯定比这个复杂的多得多。只是随便就一个例子。。</p>
-<p>   然后后面都是一些open的问题。</p>
-<p>   如果我们公司给了你offer，但是薪资和你其他offer一样，你会选择我们公司吗</p>
-<p>   当然会啊。。。我说了不管从公司规模、环境、发展前景来看，都觉得贵公司更好。。。</p>
-<p>   还有一些别的问题。。。。</p>
-<p>整个面试过程不超过十五分钟。面试之前就感觉自己可能没啥希望了。。。面试完之后更觉得自己没啥希望了。。。</p>
-<p>   首先是soildworks确实忘记了。。。其次是感觉自己那些open的问题回答的确实不够好，我非常想进这家公司，但是我无脑说自己会选择贵公司，这样写的好蠢。。。也太假了。。。</p>
-<p>​    人生就是这样，没办法，当你特别想去一家公司或者特别想拥有一份工作的时候，有时候你就是得不到。。。没办法。。。</p>
-<p>   life is fxxking movie…让我自己好好疗伤。。。难受。</p>
-<p>PS： 自学转行，找工作太难了，，连个面试的机会都难。。。哭了。。</p>
 
     </div>
 
@@ -296,7 +281,7 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag"># 面试</a>
+              <a href="/tags/%E6%80%BB%E7%BB%93/" rel="tag"># 总结</a>
           </div>
 
         
@@ -385,7 +370,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-count">34</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

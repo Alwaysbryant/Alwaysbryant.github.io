@@ -133,7 +133,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">32</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">34</span></a>
 
   </li>
   </ul>
@@ -162,6 +162,174 @@
 
           <div class="content index posts-expand">
             
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/10/09/redis%E7%9A%84%E8%BF%87%E6%9C%9F%E5%88%A0%E9%99%A4%E7%AD%96%E7%95%A5%E5%8F%8A%E6%B7%98%E6%B1%B0%E6%9C%BA%E5%88%B6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
+      <meta itemprop="name" content="swaggyW">
+      <meta itemprop="description" content="永远不要放弃">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="swaggyW's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/10/09/redis%E7%9A%84%E8%BF%87%E6%9C%9F%E5%88%A0%E9%99%A4%E7%AD%96%E7%95%A5%E5%8F%8A%E6%B7%98%E6%B1%B0%E6%9C%BA%E5%88%B6/" class="post-title-link" itemprop="url">redis的过期删除策略及淘汰机制</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-10-09 10:28:10 / 修改时间：12:18:14" itemprop="dateCreated datePublished" datetime="2021-10-09T10:28:10+08:00">2021-10-09</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="redis的过期删除策略"><a href="#redis的过期删除策略" class="headerlink" title="redis的过期删除策略"></a>redis的过期删除策略</h2><p>​    redis是以K-V键值对存放的。如果给key设置了存活时间，假设是2分钟，如果2分钟以后，redis是怎么删除这些key的。redis的过期删除策略有两种。</p>
+<p>​    一种是惰性删除，一种是定期删除。</p>
+<h4 id="惰性删除"><a href="#惰性删除" class="headerlink" title="惰性删除"></a>惰性删除</h4><p>​    见名知义，当我们取出这些key的时候再进行删除。当我们使用到这些key时，会对key进行检查，是否已经过期，如果过期了就会进行删除。这种删除策略对CPU是比较友好的，因为不需要专门来处理过期的key。但是这样也会导致由于使用到才会检查并删除，所以会有很多过期的key还存放在内存中，比较耗内存。</p>
+<h4 id="定期删除"><a href="#定期删除" class="headerlink" title="定期删除"></a>定期删除</h4><p>​    定期删除是每隔一段时间就会执行一次对过期key的删除。不是对所有的key，是抽取一部分的key进行删除。并且redis底层会限制删除操作的时长，以免对CPU造成太大负担的同时，也可以缓解内存空间的压力。</p>
+<hr>
+<p>​    但是，以上两种方法都有弊端，惰性删除会导致内存空间浪费，当积压到一定量之后，很有可能会内存溢出。而定期删除虽然可以解决内存问题，但是由于定期的抽取也会导致有大量的key遗留在内存空间中，内存溢出也只是时间问题。为了解决这一问题，redis有一个内存淘汰机制。</p>
+<h2 id="内存淘汰机制"><a href="#内存淘汰机制" class="headerlink" title="内存淘汰机制"></a>内存淘汰机制</h2>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/10/09/redis%E7%9A%84%E8%BF%87%E6%9C%9F%E5%88%A0%E9%99%A4%E7%AD%96%E7%95%A5%E5%8F%8A%E6%B7%98%E6%B1%B0%E6%9C%BA%E5%88%B6/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/09/30/redis%E4%BA%94%E5%A4%A7%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
+      <meta itemprop="name" content="swaggyW">
+      <meta itemprop="description" content="永远不要放弃">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="swaggyW's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/09/30/redis%E4%BA%94%E5%A4%A7%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/" class="post-title-link" itemprop="url">redis五大数据类型</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-09-30 14:13:33" itemprop="dateCreated datePublished" datetime="2021-09-30T14:13:33+08:00">2021-09-30</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-10-08 19:15:40" itemprop="dateModified" datetime="2021-10-08T19:15:40+08:00">2021-10-08</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="前述"><a href="#前述" class="headerlink" title="前述"></a>前述</h2><p>  redis作为当下十分热门的数据库缓存中间件，在很多项目中都有使用到。并且redis的性能也十分强大，可以缓解关系型数据库的IO压力。与Memcached相比，redis支持多种数据结构，并且redis可以周期性的将更新后的数据写入到磁盘中，即可以做持久化的操作。本文主要谈谈redis常见的五大数据结构，并且可以应用到哪些场景。</p>
+<hr>
+<p>redis的五大数据结构有： string、list、set、hash、zset</p>
+<h2 id="1-String"><a href="#1-String" class="headerlink" title="1. String"></a>1. String</h2><p>  string类型的数据大家应该很熟悉，在java中，String是字符串，在redis中，也是一样的，是redis中最基本的数据结构。redis是一款基于key-value键值对的开源框架。string类型即一个key对应一个value。并且value的最大容量是512M。并且string类型是二进制安全的，所以我们可以使用string类型来存储二进制文件或者序列化后的对象。</p>
+<hr>
+<h3 id="1-1-string常用命令"><a href="#1-1-string常用命令" class="headerlink" title="1.1 string常用命令"></a>1.1 string常用命令</h3><p>  set 命令。通过set命令可以在redis中添加键值对。如果我要添加一个key-value是”k1”-“v1” 即可用如下操作。<code>set k1 v1</code> </p>
+<p>  可以添加键值对，那么就可以通过key来获取对应的value。使用get命令即可获取到与key对应的value</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/09/30/redis%E4%BA%94%E5%A4%A7%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
       
   
   
@@ -881,184 +1049,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/05/14/leetcode03/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
-      <meta itemprop="name" content="swaggyW">
-      <meta itemprop="description" content="永远不要放弃">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="swaggyW's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/05/14/leetcode03/" class="post-title-link" itemprop="url">leetcode03</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-05-14 11:58:49" itemprop="dateCreated datePublished" datetime="2021-05-14T11:58:49+08:00">2021-05-14</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-10-11 13:12:46" itemprop="dateModified" datetime="2021-10-11T13:12:46+08:00">2021-10-11</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/leetcode/" itemprop="url" rel="index"><span itemprop="name">leetcode</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="无重复字符的最长子串"><a href="#无重复字符的最长子串" class="headerlink" title="无重复字符的最长子串"></a>无重复字符的最长子串</h3><p>​    给定一个字符串，找出其中不含有重复字符的最长的子串。并返回其长度。</p>
-<p>​    例： </p>
-<p>​         输入的是: String s = “abcabcbb”</p>
-<p>​          则最长子串是 “abc” 输出3</p>
-<hr>
-<p>​    双指针，一个指针标记起始位置，一个指针标记结束位置。</p>
-<p>​    对于例子来说，假设标记起始位置的指针是 start，遍历字符串，并确定start的值，最开始为0，将字符串中每个字符的下标记录下来，因为在确定start的值时，有可能这个字符出现过，如果出现过，则让start从上一次出现的下一个的位置，开始进行扫描，并且每一次循环，都可以得到当前的子串长度为 i-start+1。</p>
-<p>​    整个遍历过程中，我们如何得到最大长度，假设最终长度是res， 只需要取出当前循环得到的长度和原先长度中的最大值就可以了。如何记录字符串元素的下标。我们知道字符在java内存是通过ASCII的方式，以整型来进行存储的。</p>
-<p>根据ASCII对照表，选择一个int数组，大小为128就可以了。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/05/14/leetcode03/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/05/12/leetcode02/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
-      <meta itemprop="name" content="swaggyW">
-      <meta itemprop="description" content="永远不要放弃">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="swaggyW's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/05/12/leetcode02/" class="post-title-link" itemprop="url">leetcode02</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-05-12 11:21:17" itemprop="dateCreated datePublished" datetime="2021-05-12T11:21:17+08:00">2021-05-12</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-10-11 11:58:00" itemprop="dateModified" datetime="2021-10-11T11:58:00+08:00">2021-10-11</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/leetcode/" itemprop="url" rel="index"><span itemprop="name">leetcode</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="链表相加"><a href="#链表相加" class="headerlink" title="链表相加"></a>链表相加</h3><p>​    题目： 给定两个非空链表，存放的数据都是非负整数，并且都是按照逆序的方式进行存储，要求把这两个数字相加，并返回同样的链表。</p>
-<p>​    LeetCode的题目描述都令人头大。直接写个例子。</p>
-<p>​    假设有两个链表：</p>
-<p>​    链表1：  2 —-&gt;&gt;&gt;&gt;  4 —-&gt;&gt;&gt;&gt; 3</p>
-<p>​    链表2：  5 —-&gt;&gt;&gt;&gt;  6 —-&gt;&gt;&gt;&gt; 4</p>
-<p>由于是逆序的，所以数字是 342和465 </p>
-<p>相加得到 342+465=807 </p>
-<p>所以返回的链表是 ：  7  —-&gt;&gt;&gt;&gt; 0  —-&gt;&gt;&gt;&gt; 8</p>
-<hr>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/05/12/leetcode02/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1130,7 +1120,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-count">34</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
