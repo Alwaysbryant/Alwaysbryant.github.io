@@ -123,17 +123,17 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">16</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">17</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">12</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">13</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">36</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">38</span></a>
 
   </li>
   </ul>
@@ -162,6 +162,186 @@
 
           <div class="content index posts-expand">
             
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/10/20/%E4%B8%89%E6%95%B0%E4%B9%8B%E5%92%8C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
+      <meta itemprop="name" content="swaggyW">
+      <meta itemprop="description" content="因为你不救琳">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="swaggyW's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/10/20/%E4%B8%89%E6%95%B0%E4%B9%8B%E5%92%8C/" class="post-title-link" itemprop="url">三数之和</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-10-20 21:13:01" itemprop="dateCreated datePublished" datetime="2021-10-20T21:13:01+08:00">2021-10-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-11-03 21:33:36" itemprop="dateModified" datetime="2021-11-03T21:33:36+08:00">2021-11-03</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/leetcode/" itemprop="url" rel="index"><span itemprop="name">leetcode</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h4 id="三数之和"><a href="#三数之和" class="headerlink" title="三数之和"></a>三数之和</h4><p>​     leetcode上面的一道排序算法题。</p>
+<pre><code>给你一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素 a，b，c ，使得 a + b + c = 0 ？请你找出所有和为 0 且不重复的三元组。
+
+注意：答案中不可以包含重复的三元组。
+</code></pre>
+<p>思路：</p>
+<p>​    先将数组进行升序排序。。。</p>
+<p>​    一个数组中三个元素相加为0，可以通过三个指针来进行判断。一个指针i从数组第一个元素开始自增。另外两个指针分别为left、right。</p>
+<p>​    让left最开始指向i的下一个元素，即<strong>left=i+1</strong>。right指向最后，即<strong>right=nums.length-1</strong>。</p>
+<p>​     判断此时 result = nums[i] + nums[right] + nums[left] 的值。如果result&gt;0,由于数组是升序排序，那么说明要让result变小，则让right前移。如果result&lt;0， 则让left右移，让值变大。 总而言之，就是让和趋近于0，直至等于0。一次循环中，直到left&gt;=right，则循环结束。<strong>这就是为什么要让数组排序</strong></p>
+<p>​    还有一个问题就是需要去重复，因为有可能会得到重复的结果。那么在下标不越界的情况下，让当前指针与前一个或者后一个值进行比较，如果相同，则结束本次循环。</p>
+<p>​     大概就是这个思路。代码如下</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/10/20/%E4%B8%89%E6%95%B0%E4%B9%8B%E5%92%8C/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/10/12/zookeeper%E4%B8%80%E8%87%B4%E6%80%A7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
+      <meta itemprop="name" content="swaggyW">
+      <meta itemprop="description" content="因为你不救琳">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="swaggyW's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/10/12/zookeeper%E4%B8%80%E8%87%B4%E6%80%A7/" class="post-title-link" itemprop="url">zookeeper一致性</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-10-12 15:47:27" itemprop="dateCreated datePublished" datetime="2021-10-12T15:47:27+08:00">2021-10-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-10-15 21:34:32" itemprop="dateModified" datetime="2021-10-15T21:34:32+08:00">2021-10-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/zookeeper/" itemprop="url" rel="index"><span itemprop="name">zookeeper</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h4 id="分布式理论"><a href="#分布式理论" class="headerlink" title="分布式理论"></a>分布式理论</h4><p>​    分布式架构，将服务模块部署到不同的机器上，来缓解系统压力。在同一台机器上，不会存在数据的一致性等问题。但是由于分布式中，服务部署在不同机器上，网络原因是不可抗因素。</p>
+<p>​    CAP，一致性、可用性、分区容错性。必须要保证由于故障导致某些节点断掉以后，每个网络区域都能够对外提供服务，所以分区容错性是前提。而要保证高可用性，数据的一致性就得不到保证；要保证一致性，那么高可用性必然有所影响。</p>
+<p>   eureka和zookeeper可以作为分布式系统中的注册中心。注册中心负责服务的注册与查找，服务提供者会在注册中心注册自己的服务，消费者向注册中心订阅自己的服务，而注册中心就是一个服务列表。</p>
+<p>​    两者比较：</p>
+<p>​    eureka保证了CP，即可用性，在eureka中，每个节点都是平等的，当一个节点挂掉后，也不会影响正常工作，但是查询到的数据不一定是最新的。并且eureka有自我保护机制，当有85%的节点都没有正常工作时，会判定会注册中心网络故障。</p>
+<p>​    zookeeper保证了AP，即一致性，在zookeeper中，节点有三种角色，leader、follower、observer，leader即为领导者，提供读和写的服务，负责投票的发起和决议，更新系统的状态；follower即跟随者，主要负责读服务，如果遇到写服务，则会将请求转发给leader，并且可以参加选举投票；observer和follower一样，但是不参加选举投票。如果leader挂掉，会重新投票选举出新的leader。并且在整个过程中，系统是不可用的。但是保证了数据的一致性。</p>
+<h4 id="一致性"><a href="#一致性" class="headerlink" title="一致性"></a>一致性</h4><p>​    如何保证一致性。有几种方案。</p>
+<h5 id="2PC"><a href="#2PC" class="headerlink" title="2PC"></a>2PC</h5>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/10/12/zookeeper%E4%B8%80%E8%87%B4%E6%80%A7/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
       
   
   
@@ -859,187 +1039,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/09/redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
-      <meta itemprop="name" content="swaggyW">
-      <meta itemprop="description" content="因为你不救琳">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="swaggyW's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/07/09/redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/" class="post-title-link" itemprop="url">redis分布式锁</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-07-09 15:23:07" itemprop="dateCreated datePublished" datetime="2021-07-09T15:23:07+08:00">2021-07-09</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-10-09 18:19:00" itemprop="dateModified" datetime="2021-10-09T18:19:00+08:00">2021-10-09</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>​    以抢购商品为例子，一步步分析redis实现分布式锁的过程。</p>
-<p>​    在redis中设置商品数量  set goods:01 100 。 假设有100件商品。</p>
-<h4 id="单机版"><a href="#单机版" class="headerlink" title="单机版"></a>单机版</h4><p>​    假设下面这个简单的程序,就是一个很简单的逻辑。从Redis中获取数量，如果数量大于0，就可以购买，否则购买不了。</p>
-<p>​    </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Autowired</span></span><br><span class="line"><span class="keyword">private</span> StringRedisTemplate redisTemplate;</span><br><span class="line"></span><br><span class="line"><span class="meta">@GetMapping(&quot;/buy&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">buySales</span><span class="params">()</span> </span>&#123;</span><br><span class="line"><span class="comment">//从redis中获取商品的数量</span></span><br><span class="line">        String result = redisTemplate.opsForValue().get(<span class="string">&quot;goods:01&quot;</span>);</span><br><span class="line">        <span class="keyword">int</span> nums = (result == <span class="keyword">null</span>) ? <span class="number">0</span> : Integer.parseInt(result);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (nums &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="comment">//如果还有，商品数量-1</span></span><br><span class="line">            <span class="keyword">int</span> currentNums = nums - <span class="number">1</span>;</span><br><span class="line">            redisTemplate.opsForValue().set(<span class="string">&quot;goods:01&quot;</span>, String.valueOf(currentNums));</span><br><span class="line">            System.out.println(<span class="string">&quot;成功买到商品，还剩余 &quot;</span> + currentNums + <span class="string">&quot; 件&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;成功买到商品， 还剩 &quot;</span> + currentNums + <span class="string">&quot;件&quot;</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;购买失败、、、、&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span>  <span class="string">&quot;购买商品失败，因为xxxx原因......&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>​    只有一个客户端，来进行抢购商品。在多线程的条件下进行访问，会出现超卖和重复卖等问题。因此，对于多线程的单击模式下，我们可以通过锁来实现。可以使用synchronized，或者reentrantlock，这样可以解决在多个线程访问的情况下，保证同一时刻，只有一个线程拿到锁。其他线程阻塞。代码如下，把代码放在一个同步代码块中。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@GetMapping(&quot;/buy&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">buySales</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">            <span class="comment">//从redis中获取商品的数量</span></span><br><span class="line">            String result = redisTemplate.opsForValue().get(<span class="string">&quot;goods:01&quot;</span>);</span><br><span class="line">            <span class="keyword">int</span> nums = (result == <span class="keyword">null</span>) ? <span class="number">0</span> : Integer.parseInt(result);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (nums &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="comment">//如果还有，商品数量-1</span></span><br><span class="line">                <span class="keyword">int</span> currentNums = nums - <span class="number">1</span>;</span><br><span class="line">                redisTemplate.opsForValue().set(<span class="string">&quot;goods:01&quot;</span>, String.valueOf(currentNums));</span><br><span class="line">                System.out.println(<span class="string">&quot;成功买到商品，还剩余 &quot;</span> + currentNums + <span class="string">&quot; 件&quot;</span>);</span><br><span class="line">                <span class="keyword">return</span> <span class="string">&quot;成功买到商品， 还剩 &quot;</span> + currentNums + <span class="string">&quot;件&quot;</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                System.out.println(<span class="string">&quot;购买失败、、、、&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span>  <span class="string">&quot;购买商品失败，因为xxxx原因......&quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p>​    在实际中，在高并发的情况下，肯定不止一台机器，那如果是有多个机器在提供这一服务呢？</p>
-<h4 id="分布式服务"><a href="#分布式服务" class="headerlink" title="分布式服务"></a>分布式服务</h4>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/07/09/redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/06/02/factorybean%E5%92%8Cbeanfactory/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
-      <meta itemprop="name" content="swaggyW">
-      <meta itemprop="description" content="因为你不救琳">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="swaggyW's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/06/02/factorybean%E5%92%8Cbeanfactory/" class="post-title-link" itemprop="url">factorybean和beanfactory</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-06-02 17:04:33" itemprop="dateCreated datePublished" datetime="2021-06-02T17:04:33+08:00">2021-06-02</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-10-11 18:55:38" itemprop="dateModified" datetime="2021-10-11T18:55:38+08:00">2021-10-11</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h4 id="BeanFactory"><a href="#BeanFactory" class="headerlink" title="BeanFactory"></a>BeanFactory</h4><p>​    BeanFactory是spring容器的顶级接口，或者就是源码说的root，根接口。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * The root interface for accessing a Spring bean container.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">BeanFactory</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>​    BeanFactory不能够被实例化，而是定义了一套所有IOC容器必须遵守的规范。可以看看BeanFactory的结构，如下</p>
-<p> <img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/spring/factoryBean%E5%92%8Cbeanfactory/beanfactory%E7%BB%93%E6%9E%84.PNG" alt="结构"></p>
-<p>​    多个重载方法，getBean(),从spring容器中获取bean对象。 containsBean()判断spring容器中是否包含某个bean。   还有判断bean的作用域，即是否为单例bean或者多例bean的方法，isSingleton和isPrototype,还有根据bean的名字获取名字等等…</p>
-<p>   具体的容器可以对其进行功能的增加，像spring中用到比较多的ApplicationContext，就是BeanFactory的子类。而ApplicationContext接口又衍生了很多的子类，像比较熟悉的ClassPathXmlApplicationContext、 AnnoationConfigApplicationContext。</p>
-<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/spring/factoryBean%E5%92%8Cbeanfactory/BeanFactory.png" alt="类继承图"></p>
-<hr>
-<h4 id="FactoryBean"><a href="#FactoryBean" class="headerlink" title="FactoryBean"></a>FactoryBean</h4>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/06/02/factorybean%E5%92%8Cbeanfactory/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1111,20 +1110,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">36</span>
+          <span class="site-state-item-count">38</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-count">13</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-count">17</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

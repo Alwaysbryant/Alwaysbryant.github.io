@@ -123,17 +123,17 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">16</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">17</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">12</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">13</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">36</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">38</span></a>
 
   </li>
   </ul>
@@ -162,6 +162,169 @@
 
           <div class="content index posts-expand">
             
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/02/15/ElasticSearch%E5%9F%BA%E4%BA%8EJavaApi/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
+      <meta itemprop="name" content="swaggyW">
+      <meta itemprop="description" content="因为你不救琳">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="swaggyW's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/02/15/ElasticSearch%E5%9F%BA%E4%BA%8EJavaApi/" class="post-title-link" itemprop="url">ElasticSearch基于JavaApi</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-02-15 15:42:34 / 修改时间：15:44:02" itemprop="dateCreated datePublished" datetime="2023-02-15T15:42:34+08:00">2023-02-15</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/elasticsearch/" itemprop="url" rel="index"><span itemprop="name">elasticsearch</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="ElasticSearch"><a href="#ElasticSearch" class="headerlink" title="ElasticSearch"></a>ElasticSearch</h2><h3 id="创建maven项目，引入elasticsearch依赖，使用版本7-8-0"><a href="#创建maven项目，引入elasticsearch依赖，使用版本7-8-0" class="headerlink" title="创建maven项目，引入elasticsearch依赖，使用版本7.8.0"></a>创建maven项目，引入elasticsearch依赖，使用版本7.8.0</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.elasticsearch&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;elasticsearch&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;7.8.0&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line">&lt;!-- es客户端  --&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.elasticsearch.client&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;elasticsearch-rest-high-level-client&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;7.8.0&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="创建es客户端"><a href="#创建es客户端" class="headerlink" title="创建es客户端"></a>创建es客户端</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="comment">// 创建es客户端</span></span><br><span class="line">        RestHighLevelClient client = <span class="keyword">new</span> RestHighLevelClient(</span><br><span class="line">                RestClient.builder(</span><br><span class="line">                        <span class="keyword">new</span> HttpHost(<span class="string">&quot;127.0.0.1&quot;</span>, <span class="number">9200</span>, <span class="string">&quot;http&quot;</span>)));</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 关闭客户端</span></span><br><span class="line">        client.close();</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="创建索引"><a href="#创建索引" class="headerlink" title="创建索引"></a>创建索引</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建索引</span></span><br><span class="line">CreateIndexResponse order = client.indices().create(<span class="keyword">new</span> CreateIndexRequest(<span class="string">&quot;order&quot;</span>), RequestOptions.DEFAULT);</span><br><span class="line"><span class="comment">// 创建结果</span></span><br><span class="line"><span class="keyword">boolean</span> acknowledged = order.isAcknowledged();</span><br><span class="line"></span><br><span class="line">System.out.println(<span class="string">&quot;创建结果： &quot;</span> + (acknowledged ? <span class="string">&quot;成功&quot;</span>: <span class="string">&quot;失败&quot;</span>));</span><br></pre></td></tr></table></figure>
+
+<h3 id="查询索引信息"><a href="#查询索引信息" class="headerlink" title="查询索引信息"></a>查询索引信息</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 查询索引</span></span><br><span class="line">GetIndexResponse order = client.indices().get(<span class="keyword">new</span> GetIndexRequest(<span class="string">&quot;order&quot;</span>), RequestOptions.DEFAULT);</span><br><span class="line"><span class="comment">// 打印相关信息; 索引的别名、结构、设置信息</span></span><br><span class="line">System.out.println(order.getAliases());</span><br><span class="line">System.out.println(order.getMappings());</span><br><span class="line">System.out.println(order.getSettings());</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="删除索引"><a href="#删除索引" class="headerlink" title="删除索引"></a>删除索引</h3>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2023/02/15/ElasticSearch%E5%9F%BA%E4%BA%8EJavaApi/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/02/15/ElasticSearch%E5%9F%BA%E4%BA%8Ehttp%E8%AF%B7%E6%B1%82%E7%9A%84%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
+      <meta itemprop="name" content="swaggyW">
+      <meta itemprop="description" content="因为你不救琳">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="swaggyW's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/02/15/ElasticSearch%E5%9F%BA%E4%BA%8Ehttp%E8%AF%B7%E6%B1%82%E7%9A%84%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C/" class="post-title-link" itemprop="url">ElasticSearch基于http请求的基础操作</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-02-15 15:42:25 / 修改时间：15:43:39" itemprop="dateCreated datePublished" datetime="2023-02-15T15:42:25+08:00">2023-02-15</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/elasticsearch/" itemprop="url" rel="index"><span itemprop="name">elasticsearch</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="ElasticSearch"><a href="#ElasticSearch" class="headerlink" title="ElasticSearch"></a>ElasticSearch</h2><h3 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h3><p>Elasticsearch 是一个免费且开放的分布式搜索和分析引擎，适用于包括文本、数字、地理空间、结构化和非结构化数据等在内的所有类型的数据。</p>
+<p>es基于Restful风格，用于全文搜索以及文档搜索等。</p>
+<h3 id="倒排索引-amp-正排索引"><a href="#倒排索引-amp-正排索引" class="headerlink" title="倒排索引&amp;正排索引"></a>倒排索引&amp;正排索引</h3><p>正排索引： 根据主键索引，去查询相关信息。</p>
+<p>ps：对于t_desc表两个字端： id（主键）、desc。对desc进行模糊查询，就需要通过主键去遍历，这样效率就不会很高。</p>
+<p>倒排索引：根据关键字（keyword）来查询主键。</p>
+<h3 id="索引操作"><a href="#索引操作" class="headerlink" title="索引操作"></a>索引操作</h3><p>索引：Index，对于结构化数据库，就相当于所选择的数据库一样。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2023/02/15/ElasticSearch%E5%9F%BA%E4%BA%8Ehttp%E8%AF%B7%E6%B1%82%E7%9A%84%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
       
   
   
@@ -886,186 +1049,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/10/20/%E4%B8%89%E6%95%B0%E4%B9%8B%E5%92%8C/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
-      <meta itemprop="name" content="swaggyW">
-      <meta itemprop="description" content="因为你不救琳">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="swaggyW's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/10/20/%E4%B8%89%E6%95%B0%E4%B9%8B%E5%92%8C/" class="post-title-link" itemprop="url">三数之和</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-10-20 21:13:01" itemprop="dateCreated datePublished" datetime="2021-10-20T21:13:01+08:00">2021-10-20</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-11-03 21:33:36" itemprop="dateModified" datetime="2021-11-03T21:33:36+08:00">2021-11-03</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/leetcode/" itemprop="url" rel="index"><span itemprop="name">leetcode</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h4 id="三数之和"><a href="#三数之和" class="headerlink" title="三数之和"></a>三数之和</h4><p>​     leetcode上面的一道排序算法题。</p>
-<pre><code>给你一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素 a，b，c ，使得 a + b + c = 0 ？请你找出所有和为 0 且不重复的三元组。
-
-注意：答案中不可以包含重复的三元组。
-</code></pre>
-<p>思路：</p>
-<p>​    先将数组进行升序排序。。。</p>
-<p>​    一个数组中三个元素相加为0，可以通过三个指针来进行判断。一个指针i从数组第一个元素开始自增。另外两个指针分别为left、right。</p>
-<p>​    让left最开始指向i的下一个元素，即<strong>left=i+1</strong>。right指向最后，即<strong>right=nums.length-1</strong>。</p>
-<p>​     判断此时 result = nums[i] + nums[right] + nums[left] 的值。如果result&gt;0,由于数组是升序排序，那么说明要让result变小，则让right前移。如果result&lt;0， 则让left右移，让值变大。 总而言之，就是让和趋近于0，直至等于0。一次循环中，直到left&gt;=right，则循环结束。<strong>这就是为什么要让数组排序</strong></p>
-<p>​    还有一个问题就是需要去重复，因为有可能会得到重复的结果。那么在下标不越界的情况下，让当前指针与前一个或者后一个值进行比较，如果相同，则结束本次循环。</p>
-<p>​     大概就是这个思路。代码如下</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/10/20/%E4%B8%89%E6%95%B0%E4%B9%8B%E5%92%8C/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/10/12/zookeeper%E4%B8%80%E8%87%B4%E6%80%A7/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
-      <meta itemprop="name" content="swaggyW">
-      <meta itemprop="description" content="因为你不救琳">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="swaggyW's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/10/12/zookeeper%E4%B8%80%E8%87%B4%E6%80%A7/" class="post-title-link" itemprop="url">zookeeper一致性</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-10-12 15:47:27" itemprop="dateCreated datePublished" datetime="2021-10-12T15:47:27+08:00">2021-10-12</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-10-15 21:34:32" itemprop="dateModified" datetime="2021-10-15T21:34:32+08:00">2021-10-15</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/zookeeper/" itemprop="url" rel="index"><span itemprop="name">zookeeper</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h4 id="分布式理论"><a href="#分布式理论" class="headerlink" title="分布式理论"></a>分布式理论</h4><p>​    分布式架构，将服务模块部署到不同的机器上，来缓解系统压力。在同一台机器上，不会存在数据的一致性等问题。但是由于分布式中，服务部署在不同机器上，网络原因是不可抗因素。</p>
-<p>​    CAP，一致性、可用性、分区容错性。必须要保证由于故障导致某些节点断掉以后，每个网络区域都能够对外提供服务，所以分区容错性是前提。而要保证高可用性，数据的一致性就得不到保证；要保证一致性，那么高可用性必然有所影响。</p>
-<p>   eureka和zookeeper可以作为分布式系统中的注册中心。注册中心负责服务的注册与查找，服务提供者会在注册中心注册自己的服务，消费者向注册中心订阅自己的服务，而注册中心就是一个服务列表。</p>
-<p>​    两者比较：</p>
-<p>​    eureka保证了CP，即可用性，在eureka中，每个节点都是平等的，当一个节点挂掉后，也不会影响正常工作，但是查询到的数据不一定是最新的。并且eureka有自我保护机制，当有85%的节点都没有正常工作时，会判定会注册中心网络故障。</p>
-<p>​    zookeeper保证了AP，即一致性，在zookeeper中，节点有三种角色，leader、follower、observer，leader即为领导者，提供读和写的服务，负责投票的发起和决议，更新系统的状态；follower即跟随者，主要负责读服务，如果遇到写服务，则会将请求转发给leader，并且可以参加选举投票；observer和follower一样，但是不参加选举投票。如果leader挂掉，会重新投票选举出新的leader。并且在整个过程中，系统是不可用的。但是保证了数据的一致性。</p>
-<h4 id="一致性"><a href="#一致性" class="headerlink" title="一致性"></a>一致性</h4><p>​    如何保证一致性。有几种方案。</p>
-<h5 id="2PC"><a href="#2PC" class="headerlink" title="2PC"></a>2PC</h5>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/10/12/zookeeper%E4%B8%80%E8%87%B4%E6%80%A7/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1137,20 +1120,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">36</span>
+          <span class="site-state-item-count">38</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-count">13</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-count">17</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
