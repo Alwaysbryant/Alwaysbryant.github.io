@@ -28,7 +28,7 @@
 <meta property="og:description" content="ElasticSearch创建maven项目，引入elasticsearch依赖，使用版本7.8.01234567891011&lt;dependency&gt;    &lt;groupId&gt;org.elasticsearch&lt;&#x2F;groupId&gt;    &lt;artifactId&gt;elasticsearch&lt;&#x2F;artifactId&gt;    &lt;versi">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-02-15T07:42:34.000Z">
-<meta property="article:modified_time" content="2023-02-15T07:44:02.765Z">
+<meta property="article:modified_time" content="2023-02-16T11:53:05.960Z">
 <meta property="article:author" content="swaggyW">
 <meta property="article:tag" content="elasticsearch">
 <meta name="twitter:card" content="summary">
@@ -192,10 +192,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2023-02-15 15:42:34 / 修改时间：15:44:02" itemprop="dateCreated datePublished" datetime="2023-02-15T15:42:34+08:00">2023-02-15</time>
+              <time title="创建时间：2023-02-15 15:42:34" itemprop="dateCreated datePublished" datetime="2023-02-15T15:42:34+08:00">2023-02-15</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-02-16 19:53:05" itemprop="dateModified" datetime="2023-02-16T19:53:05+08:00">2023-02-16</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -252,10 +258,7 @@
 
 <h3 id="分组查询"><a href="#分组查询" class="headerlink" title="分组查询"></a>分组查询</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 聚合查询</span></span><br><span class="line">SearchRequest searchRequest = <span class="keyword">new</span> SearchRequest();</span><br><span class="line"><span class="comment">// 指定索引</span></span><br><span class="line">searchRequest.indices(<span class="string">&quot;order&quot;</span>);</span><br><span class="line">SearchSourceBuilder searchSourceBuilder = <span class="keyword">new</span> SearchSourceBuilder();</span><br><span class="line"><span class="comment">// 聚合函数</span></span><br><span class="line"><span class="comment">// 最大值</span></span><br><span class="line"><span class="comment">//        AggregationBuilder aggregationBuilder = AggregationBuilders.max(&quot;max_age&quot;).field(&quot;price&quot;);</span></span><br><span class="line"><span class="comment">// 分组</span></span><br><span class="line">AggregationBuilder aggregationBuilder = AggregationBuilders.terms(<span class="string">&quot;max_group&quot;</span>).field(<span class="string">&quot;price&quot;</span>);</span><br><span class="line">searchSourceBuilder.aggregation(aggregationBuilder);</span><br><span class="line">searchRequest.source(searchSourceBuilder);</span><br><span class="line">SearchResponse search = client.search(searchRequest, RequestOptions.DEFAULT);</span><br><span class="line"><span class="keyword">for</span> (SearchHit hit : search.getHits()) &#123;</span><br><span class="line">  System.out.println(hit.getSourceAsString());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-
-
-
-
+<p><strong>PS：github地址： <a target="_blank" rel="noopener" href="https://github.com/Alwaysbryant/es-study-javaapi.git">https://github.com/Alwaysbryant/es-study-javaapi.git</a></strong></p>
 
     </div>
 

@@ -20,20 +20,27 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="​    在网上找了个开源项目，一个在线教育的网站，用户可以购买课程之后，就可以观看。用到了微服务的架构，后台管理和前台用户系统。记录一下。 ​     一个网站需要哪些功能，只有明确这一点，才能在实现的时候有清晰的思路。 ​    后台管理员需要有哪些功能？ 在线教育，有几个重要的点，课程、权限。课程： 后台管理员在后台系统中，进行课程的添加（包含课程的一些信息以及课程视频的上传、分类），权限：">
+  <meta name="description" content="创建索引指定副本和分片数量123456&amp;#123;  &quot;settings&quot;: &amp;#123;    &quot;number_of_shards&quot;: 3,  &#x2F;&#x2F;主分片数    &quot;number_of_replicas&quot;: 1 &#x2F;&#x2F;副本  &amp;#125;&amp;#125;  elasticsearch-head安装github上克隆代码elasticsearc">
 <meta property="og:type" content="article">
-<meta property="og:title" content="在线教育">
-<meta property="og:url" content="http://example.com/2021/07/10/%E5%9C%A8%E7%BA%BF%E6%95%99%E8%82%B2/index.html">
+<meta property="og:title" content="elasticsearch简易原理">
+<meta property="og:url" content="http://example.com/2023/02/16/elasticsearch%E7%AE%80%E6%98%93%E5%8E%9F%E7%90%86/index.html">
 <meta property="og:site_name" content="swaggyW&#39;s Blog">
-<meta property="og:description" content="​    在网上找了个开源项目，一个在线教育的网站，用户可以购买课程之后，就可以观看。用到了微服务的架构，后台管理和前台用户系统。记录一下。 ​     一个网站需要哪些功能，只有明确这一点，才能在实现的时候有清晰的思路。 ​    后台管理员需要有哪些功能？ 在线教育，有几个重要的点，课程、权限。课程： 后台管理员在后台系统中，进行课程的添加（包含课程的一些信息以及课程视频的上传、分类），权限：">
+<meta property="og:description" content="创建索引指定副本和分片数量123456&amp;#123;  &quot;settings&quot;: &amp;#123;    &quot;number_of_shards&quot;: 3,  &#x2F;&#x2F;主分片数    &quot;number_of_replicas&quot;: 1 &#x2F;&#x2F;副本  &amp;#125;&amp;#125;  elasticsearch-head安装github上克隆代码elasticsearc">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2021-07-10T10:44:46.000Z">
-<meta property="article:modified_time" content="2021-10-19T09:55:02.000Z">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/3eb08fe1e5404a3e89fd2b04c256a809.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/30cb0fef645948739a68722b58d13d7b.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/bc87f26ee2f74232bd0facc1866507f3.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/ba008432b0dc4526a56035f43ebb795b.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/f8913efe5543417abfd94860ec390781.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/0540b8ea3e6c4755a0ecd3f690836877.png">
+<meta property="article:published_time" content="2023-02-16T11:54:11.000Z">
+<meta property="article:modified_time" content="2023-02-16T11:54:35.301Z">
 <meta property="article:author" content="swaggyW">
-<meta property="article:tag" content="项目总结">
+<meta property="article:tag" content="elasticsearch">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/3eb08fe1e5404a3e89fd2b04c256a809.png">
 
-<link rel="canonical" href="http://example.com/2021/07/10/%E5%9C%A8%E7%BA%BF%E6%95%99%E8%82%B2/">
+<link rel="canonical" href="http://example.com/2023/02/16/elasticsearch%E7%AE%80%E6%98%93%E5%8E%9F%E7%90%86/">
 
 
 <script id="page-configurations">
@@ -46,7 +53,7 @@
   };
 </script>
 
-  <title>在线教育 | swaggyW's Blog</title>
+  <title>elasticsearch简易原理 | swaggyW's Blog</title>
   
 
 
@@ -170,7 +177,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/10/%E5%9C%A8%E7%BA%BF%E6%95%99%E8%82%B2/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/02/16/elasticsearch%E7%AE%80%E6%98%93%E5%8E%9F%E7%90%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
@@ -183,7 +190,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          在线教育
+          elasticsearch简易原理
         </h1>
 
         <div class="post-meta">
@@ -192,23 +199,17 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2021-07-10 18:44:46" itemprop="dateCreated datePublished" datetime="2021-07-10T18:44:46+08:00">2021-07-10</time>
+              <time title="创建时间：2023-02-16 19:54:11 / 修改时间：19:54:35" itemprop="dateCreated datePublished" datetime="2023-02-16T19:54:11+08:00">2023-02-16</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-10-19 17:55:02" itemprop="dateModified" datetime="2021-10-19T17:55:02+08:00">2021-10-19</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/other/" itemprop="url" rel="index"><span itemprop="name">other</span></a>
+                  <a href="/categories/elasticsearch/" itemprop="url" rel="index"><span itemprop="name">elasticsearch</span></a>
                 </span>
             </span>
 
@@ -230,25 +231,54 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>​    在网上找了个开源项目，一个在线教育的网站，用户可以购买课程之后，就可以观看。用到了微服务的架构，后台管理和前台用户系统。记录一下。</p>
-<p>​     一个网站需要哪些功能，只有明确这一点，才能在实现的时候有清晰的思路。</p>
-<p>​    后台管理员需要有哪些功能？ 在线教育，有几个重要的点，课程、权限。课程： 后台管理员在后台系统中，进行课程的添加（包含课程的一些信息以及课程视频的上传、分类），权限： 管理员对不同的人员设置访问权限，哪些人有哪些角色，而哪些角色又有哪些权限。</p>
-<p>​    前台用户系统： 用户的登录注册，用户的支付，用户的观看。</p>
-<p>​     采用微服务架构，将项目根据功能分成一个个服务模块。</p>
-<p>​     前端方面： 使用vue来进行编写。并且对于一些按钮表单啥的，直接引入element-ui，在官网上面找然后修改就可以了。</p>
-<p>​    后台管理系统</p>
-<p>​    关于老师模块，老师的信息添加，前端form表单提交向服务端发送请求，将信息封装成一个json对象发送给服务器，直接保存在数据库就可以。删除采用逻辑删除的方式。更新信息，通过老师的ID来查询对应的数据回显到页面，在进行修改，和添加差不多。最后就是查询。按照条件搜索进行查询，一般查询会使用模糊匹配、日期、老师的头衔等进行查询，封装一个实体类。增删改查比较简单。</p>
-<p>​    课程模块，除了增删改查之外，课程的分类查询及删除，稍微复杂一点，首先由于多级分类，一个分类下面有多个分类。课程的分类有两级。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FirstSubject</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String id;</span><br><span class="line">    <span class="keyword">private</span> String title;</span><br><span class="line">    <span class="keyword">private</span> List&lt;SecondSubject&gt; children = <span class="keyword">new</span> ArrayList&lt;&gt;(); <span class="comment">//一个一级分类有多个二级分类</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SecondSubject</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String id;</span><br><span class="line">    <span class="keyword">private</span> String title;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        <h3 id="创建索引指定副本和分片数量"><a href="#创建索引指定副本和分片数量" class="headerlink" title="创建索引指定副本和分片数量"></a>创建索引指定副本和分片数量</h3><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;settings&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;number_of_shards&quot;</span>: <span class="number">3</span>,  <span class="comment">//主分片数</span></span><br><span class="line">    <span class="attr">&quot;number_of_replicas&quot;</span>: <span class="number">1</span> <span class="comment">//副本</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>​    在课程中，需要添加章节和小节，在小节中需要添加视频，而视频使用阿里云视频点播，每次删除小节的时候都需要调用视频点播服务，进行视频的删除。    </p>
-<p>​    权限管理，对管理人员进行权限分配，用户（user）是什么角色（role），而角色又有什么权限（permission），首先在建表方面，需要5张表，t_user、t_role、t_permission、t_user_role、t_role_permission。使用的是RBAC（Role-Based Access Control）模型。用户登陆之后，会根据用户名获取到用户的权限列表，然后放入redis中，key为用户名，然后客户端从请求头中获取到token，并取出用户名，然后从redis中获取权限列表，由spring security赋予权限。</p>
-<p>​     用户的注册，使用手机获取验证码，调用阿里云的api就可以了。用户的微信登录，扫描二维码调用微信接口并会返回一个临时票据code，通过code去访问微信固定地址，即可得到微信扫描者的access_token 和openid，通过这两个值去访问微信地址，从而得到扫描人的信息。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@GetMapping(&quot;sendCode/&#123;phone&#125;&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Result <span class="title">sendCode</span><span class="params">(<span class="meta">@PathVariable</span> String phone)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//先判断缓存中是否存在</span></span><br><span class="line">    String code = redisTemplate.opsForValue().get(phone);</span><br><span class="line">    <span class="comment">//如果缓存有</span></span><br><span class="line">    <span class="keyword">if</span> (!StringUtils.isEmpty(code)) &#123;</span><br><span class="line">        <span class="keyword">return</span> Result.ok();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//生成六位随机数，给阿里云发送短信</span></span><br><span class="line">    code = RandomUtil.getSixBitRandom();</span><br><span class="line">    <span class="comment">//放入一个map中</span></span><br><span class="line">    HashMap&lt;String, Object&gt; params = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">   params.put(<span class="string">&quot;code&quot;</span>, code);</span><br><span class="line"></span><br><span class="line">    redisTemplate.opsForValue().set(phone, code, <span class="number">5</span>, TimeUnit.MINUTES);</span><br><span class="line">  </span><br><span class="line">    <span class="comment">//调用service方法进行发啊送短信</span></span><br><span class="line">    <span class="keyword">boolean</span> isSuccess = msmService.send(params, phone);</span><br><span class="line">    <span class="keyword">if</span> (isSuccess) &#123;</span><br><span class="line">        <span class="comment">//说明发送成功,放入到redis缓存中</span></span><br><span class="line">        redisTemplate.opsForValue().set(phone, code, <span class="number">5</span>, TimeUnit.MINUTES);</span><br><span class="line">        <span class="keyword">return</span> Result.ok();</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> Result.error().message(<span class="string">&quot;发送失败&quot;</span>);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="elasticsearch-head安装"><a href="#elasticsearch-head安装" class="headerlink" title="elasticsearch-head安装"></a>elasticsearch-head安装</h3><p>github上克隆代码elasticsearch-head，按照md中操作启动即可，<strong>需要安装node.js</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/mobz/elasticsearch-head.git</span><br><span class="line"></span><br><span class="line">cd elasticsearch-head</span><br><span class="line"></span><br><span class="line">npm install</span><br><span class="line">npm run start</span><br></pre></td></tr></table></figure>
 
-<p>​    用户支付功能，用户点击支付，会生成一个订单，订单内容包含用户信息与课程信息，因此需要通过feign远程调用。因为是网上课程，所以没有库存问题。不需要过多的考虑分布式事务问题。生成订单后，会跳转至微信支付，调用微信支付的api。</p>
-<p>​    另外就是网关了，通过gateway进行统一的请求转发。并且解决跨域问题。</p>
-<p>这个项目功能不算难，主要是思路，当有一个需求给到自己时，应该怎么完成需求，完成之后应该怎么优化，很重要，我没做过实际项目，对于一个转行的人来说，找工作很难，但是只要坚持自己的想法，一定可以成功的。。。多学习，多动手。。加油</p>
+<p>访问localhost:9200。</p>
+<p>健康状态说明：</p>
+<p>绿色： 正常运行；</p>
+<p>黄色： 副本未正常运行；</p>
+<p>红色：分片未正常运行。</p>
+<h3 id="故障转移"><a href="#故障转移" class="headerlink" title="故障转移"></a>故障转移</h3><p>单点集群不会创建副本，这是因为es集群中，索引分片和备份的副本不能在同一节点上。</p>
+<p><img src="https://img-blog.csdnimg.cn/3eb08fe1e5404a3e89fd2b04c256a809.png" alt="img"></p>
+<p>当有第二个节点启动并加入集群时，备份和分片会自动分配。</p>
+<p><img src="https://img-blog.csdnimg.cn/30cb0fef645948739a68722b58d13d7b.png" alt="img"></p>
+<h3 id="水平扩容"><a href="#水平扩容" class="headerlink" title="水平扩容"></a>水平扩容</h3><p>多节点集群，es会自动将每个节点上的分片进行平均，保证每个节点的负荷量都在相同的水平。</p>
+<p><img src="https://img-blog.csdnimg.cn/bc87f26ee2f74232bd0facc1866507f3.png" alt="img"></p>
+<p>如果节点数量大于所有分片的数量（包括主分片和副本），则会造成资源的浪费。</p>
+<p>主分片在创建索引的时候已经被指定，”number_of_shards”，并且是不允许被修改的；</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl --location --request PUT &#x27;localhost:18120/users/_settings&#x27; \</span><br><span class="line">--header &#x27;Content-Type: application/json&#x27; \</span><br><span class="line">--data-raw &#x27;&#123;&quot;number_of_replicas&quot;: 2&#125;&#x27;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>![image-20230216160335268](/Users/cyj/Library/Application Support/typora-user-images/image-20230216160335268.png)</p>
+<p>但是副本可以动态的修改。这样就可以在水平扩容时，保证资源不被浪费。</p>
+<p><img src="https://img-blog.csdnimg.cn/ba008432b0dc4526a56035f43ebb795b.png" alt="img"></p>
+<h3 id="应对故障"><a href="#应对故障" class="headerlink" title="应对故障"></a>应对故障</h3><p>同样，es集群与大多数分布式系统中的集群相同，如果某一节点挂掉了，则es集群会重新选举master节点，并对分片进行重新分配。</p>
+<p><img src="https://img-blog.csdnimg.cn/f8913efe5543417abfd94860ec390781.png" alt="img"></p>
+<p>节点恢复后，也会重新加入集群中</p>
+<p><img src="https://img-blog.csdnimg.cn/0540b8ea3e6c4755a0ecd3f690836877.png" alt="img"></p>
+<h3 id="路由计算-amp-分片控制"><a href="#路由计算-amp-分片控制" class="headerlink" title="路由计算&amp;分片控制"></a>路由计算&amp;分片控制</h3><p>路由计算：</p>
+<p>进行分片后，文档（document）只会存储在某一个分片上，而与redis的slot类似，es集群所采用的路由计算方式也是通过对文档的唯一标识–id进行hash运算，<strong>根据倒排索引来获取到id</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hash(_doc_id) % (number_of_shards)</span><br></pre></td></tr></table></figure>
+
+<p>分片控制：</p>
+<p>对于查询，由于每一个节点上都有主分片，或者是副本，忽略一致性问题，每一个节点上都有对应的数据。但是在实际中每一个节点可能此时面临的压力不一样，所以在查询时一般按照轮询的方式。</p>
+<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><p>es集群处理写请求。客户端发出的请求会落到任意节点上，该节点称为<strong>协调节点</strong>，协调节点会将请求转发到指定的节点（<strong>前面所提到的计算规则</strong>），主分片将数据保存后，会同步给副本，副本同步完成之后会反馈给主分片，从而主分片反馈给客户端。</p>
+<p>es集群处理读请求，协调结点在每次请求的时候都会通过轮询所有的副本分片来达到负载均衡。在文档被检索时，已经被索引的文档可能已经存在于主分片上但是还没有复制到副本分片。 在这种情况下，副本分片可能会报告文档不存在，但是主分片可能成功返回文档。 一旦索引请求成功返回给用户，文档在主分片和副本分片都是可用的。</p>
+<p><strong>kibana</strong>的使用：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://github.com/elastic/kibana.git</span><br></pre></td></tr></table></figure>
+
+<p><strong>ik分词器</strong>的使用：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://github.com/medcl/elasticsearch-analysis-ik.git</span><br></pre></td></tr></table></figure>
+
+<h3 id="Spring集成es"><a href="#Spring集成es" class="headerlink" title="Spring集成es"></a>Spring集成es</h3><p>github地址： </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://github.com/Alwaysbryant/es-study-springdata-demo.git</span><br></pre></td></tr></table></figure>
+
+
+
 
     </div>
 
@@ -270,7 +300,7 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/" rel="tag"># 项目总结</a>
+              <a href="/tags/elasticsearch/" rel="tag"># elasticsearch</a>
           </div>
 
         
@@ -279,13 +309,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2021/07/09/redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/" rel="prev" title="redis分布式锁">
-      <i class="fa fa-chevron-left"></i> redis分布式锁
+    <a href="/2023/02/15/es%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2/" rel="prev" title="es集群部署">
+      <i class="fa fa-chevron-left"></i> es集群部署
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2021/07/12/AQS%E7%9A%84%E5%88%86%E6%9E%90/" rel="next" title="AQS的分析">
-      AQS的分析 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -344,6 +371,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E7%B4%A2%E5%BC%95%E6%8C%87%E5%AE%9A%E5%89%AF%E6%9C%AC%E5%92%8C%E5%88%86%E7%89%87%E6%95%B0%E9%87%8F"><span class="nav-text">创建索引指定副本和分片数量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#elasticsearch-head%E5%AE%89%E8%A3%85"><span class="nav-text">elasticsearch-head安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%85%E9%9A%9C%E8%BD%AC%E7%A7%BB"><span class="nav-text">故障转移</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B0%B4%E5%B9%B3%E6%89%A9%E5%AE%B9"><span class="nav-text">水平扩容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BA%94%E5%AF%B9%E6%95%85%E9%9A%9C"><span class="nav-text">应对故障</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B7%AF%E7%94%B1%E8%AE%A1%E7%AE%97-amp-%E5%88%86%E7%89%87%E6%8E%A7%E5%88%B6"><span class="nav-text">路由计算&amp;分片控制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B6%E4%BB%96"><span class="nav-text">其他</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring%E9%9B%86%E6%88%90es"><span class="nav-text">Spring集成es</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
