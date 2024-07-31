@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/icon/32X32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/icon/16X16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="都升序排列 冒泡​    代码, 每一趟都找出最大的数沉底，比较相邻的两个元素，时间复杂度O(n*n) ​    冒泡算法是稳定的，对于相同的两个值，冒泡排序不会改变它们的相对位置。 1234567891011public void bubbleSort(int[] nums) &amp;#123;  for (int i &#x3D; 0; i &lt; nums.length - 1; i++) &amp;#123;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="排序(上)">
+<meta property="og:url" content="http://example.com/2021/04/23/%E6%8E%92%E5%BA%8F/index.html">
+<meta property="og:site_name" content="swaggyW&#39;s Blog">
+<meta property="og:description" content="都升序排列 冒泡​    代码, 每一趟都找出最大的数沉底，比较相邻的两个元素，时间复杂度O(n*n) ​    冒泡算法是稳定的，对于相同的两个值，冒泡排序不会改变它们的相对位置。 1234567891011public void bubbleSort(int[] nums) &amp;#123;  for (int i &#x3D; 0; i &lt; nums.length - 1; i++) &amp;#123;">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/%E7%AE%97%E6%B3%95/insert.PNG">
+<meta property="og:image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/%E7%AE%97%E6%B3%95/array.PNG">
+<meta property="og:image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/%E7%AE%97%E6%B3%95/shell.PNG">
+<meta property="og:image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/%E7%AE%97%E6%B3%95/shell2.PNG">
+<meta property="og:image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/%E7%AE%97%E6%B3%95/shell4.PNG">
+<meta property="og:image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/%E7%AE%97%E6%B3%95/lastshell.PNG">
+<meta property="article:published_time" content="2021-04-23T13:37:51.000Z">
+<meta property="article:modified_time" content="2023-04-03T06:07:29.066Z">
+<meta property="article:author" content="swaggyW">
+<meta property="article:tag" content="算法">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/%E7%AE%97%E6%B3%95/insert.PNG">
+
+<link rel="canonical" href="http://example.com/2021/04/23/%E6%8E%92%E5%BA%8F/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>排序(上) | swaggyW's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">swaggyW's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">感谢来访~~~~~</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">17</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">14</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">42</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+  <a href="https://github.com/Alwaysbryant" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/04/23/%E6%8E%92%E5%BA%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
+      <meta itemprop="name" content="swaggyW">
+      <meta itemprop="description" content="我这双眼，又能看清什么呢">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="swaggyW's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          排序(上)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-04-23 21:37:51" itemprop="dateCreated datePublished" datetime="2021-04-23T21:37:51+08:00">2021-04-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-04-03 14:07:29" itemprop="dateModified" datetime="2023-04-03T14:07:29+08:00">2023-04-03</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/leetcode/" itemprop="url" rel="index"><span itemprop="name">leetcode</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>都升序排列</p>
+<h4 id="冒泡"><a href="#冒泡" class="headerlink" title="冒泡"></a>冒泡</h4><p>​    代码, 每一趟都找出最大的数沉底，比较相邻的两个元素，时间复杂度O(n*n)</p>
+<p>​    冒泡算法是稳定的，对于相同的两个值，冒泡排序不会改变它们的相对位置。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">bubbleSort</span><span class="params">(<span class="keyword">int</span>[] nums)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nums.length - <span class="number">1</span>; i++) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; nums.length - i - <span class="number">1</span>; j++) &#123;</span><br><span class="line">      <span class="keyword">if</span> (nums[j] &gt; nums[j + <span class="number">1</span>]) &#123;</span><br><span class="line">        <span class="keyword">int</span> t = nums[j];</span><br><span class="line">        nums[j] = nums[j + <span class="number">1</span>];</span><br><span class="line">        nums[j + <span class="number">1</span>] = t;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="选择"><a href="#选择" class="headerlink" title="选择"></a>选择</h4><p>​    选择排序是按顺序取出元素，并将当前元素与后面所有元素进行比较，如果后面元素小于该当前元素，则交换位置，保证每一趟选择排序都可以得到剩下数组元素中的最小值。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">selectSort</span><span class="params">(<span class="keyword">int</span>[] arr)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; arr.length - <span class="number">1</span>; i++) &#123;</span><br><span class="line">        <span class="keyword">int</span> min = arr[i]; <span class="comment">//最小值</span></span><br><span class="line">        <span class="keyword">int</span> index = i; <span class="comment">//最小值的下标</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = i + <span class="number">1</span>; j &lt; arr.length; j++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (min &gt; arr[j]) &#123;</span><br><span class="line">                min = arr[j];</span><br><span class="line">                index = j;</span><br><span class="line">            &#125;</span><br><span class="line">            </span><br><span class="line">        &#125; </span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> (index != i) &#123;</span><br><span class="line">            arr[index] = arr[i];</span><br><span class="line">            arr[i] = min;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    选择排序的时间复杂度也是 O(n*n)，但是选择排序不稳定，在一轮排序中很有可能，例子如下是</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">现在有一个数组: int[] arr = &#123;2,3,12,2,1&#125;</span><br><span class="line">进行第一轮选择时，min = arr[0] = 2， 最后arr[0] 会与arr[4] = 1 交换位置，</span><br><span class="line">结果: int arr[] = &#123;1,3,12,2,2&#125;,</span><br><span class="line">此时，两个相同的数字的相对位置发生了变化，所以选择排序是不稳定的。</span><br></pre></td></tr></table></figure>
+
+<h4 id="插入"><a href="#插入" class="headerlink" title="插入"></a>插入</h4><p>​    插入排序，遍历数组，将当前数组插入到在他之前的数组中，因为前面的数组已经排好序了，插入排序，会比较上一个元素，直到找到比自己小的元素，此时就是该元素的插入位置。</p>
+<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/%E7%AE%97%E6%B3%95/insert.PNG" alt="insert"></p>
+<p>(PS: 忽略这个30上面的箭头。。。。)</p>
+<p>在进行比较的过程中，如果前一个元素大于当前元素，则会让其数组后移。代码如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">insertSort</span><span class="params">(<span class="keyword">int</span>[] nums)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nums.length; i++) &#123;</span><br><span class="line">    <span class="keyword">int</span> insertVal = nums[i];</span><br><span class="line">    <span class="keyword">int</span> insertIndex = i;</span><br><span class="line">    <span class="keyword">while</span> (insertIndex &gt;= <span class="number">1</span> &amp;&amp; insertVal &lt; nums[insertIndex - <span class="number">1</span>]) &#123;</span><br><span class="line">      nums[insertIndex] = nums[insertIndex - <span class="number">1</span>];</span><br><span class="line">      insertIndex--;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (insertIndex != i) &#123;</span><br><span class="line">      nums[insertIndex] = insertVal;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    插入排序的时间复杂度也是O（n*n）, 并且很明显是稳定排序。</p>
+<h4 id="希尔排序"><a href="#希尔排序" class="headerlink" title="希尔排序"></a>希尔排序</h4><p>​    希尔排序是基于插入排序改良过的，通过一个增量，来把数组分成若干小组，然后在进行插入排序，然后缩短增量，再来进行分组，在使用插入排序。到最后就只剩一组了，这个时候的数组的较小的值都会在数组前面，较大的值都会在数组后面，再来进行插入排序的话，会比较快。</p>
+<p>​    假设有一个数组如下</p>
+<p>​    <img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/%E7%AE%97%E6%B3%95/array.PNG" alt="array"></p>
+<p>​    定义一个增量gap，让gap = arr.length / 2, 即gap=5，那么就把数组分成了五组，步长是5.</p>
+<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/%E7%AE%97%E6%B3%95/shell.PNG" alt="shell1"></p>
+<p>进行插入排序之后。如下</p>
+<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/%E7%AE%97%E6%B3%95/shell2.PNG" alt="shell2"></p>
+<p>进行第二次分组，gap = gap/2 = 5/2 = 2。被分为两组。并进行插入排序</p>
+<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/%E7%AE%97%E6%B3%95/shell4.PNG" alt="shell4"></p>
+<p>在将增量缩短，gap = gap /2 = 1。则被分为一组，这个时候的数组已经将较小的数全部放在前面，较大值放在后面了，最后再进行插入排序。</p>
+<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/%E7%AE%97%E6%B3%95/lastshell.PNG" alt="shelllast"></p>
+<p>代码如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">shellSort</span><span class="params">(<span class="keyword">int</span>[] nums)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> step = nums.length / <span class="number">2</span>; step &gt; <span class="number">0</span>; step /= <span class="number">2</span>) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = step; i &lt; nums.length; i++) &#123;</span><br><span class="line">      <span class="keyword">int</span> insertVal = nums[i];</span><br><span class="line">      <span class="keyword">int</span> insertIndex = i;</span><br><span class="line">      <span class="keyword">if</span> (nums[insertIndex] &lt; nums[insertIndex - step]) &#123;</span><br><span class="line">        <span class="keyword">while</span> (insertIndex - step &gt;= <span class="number">0</span> &amp;&amp; nums[insertIndex - step] &gt; insertVal) &#123;</span><br><span class="line">          nums[insertIndex] = nums[insertIndex - step];</span><br><span class="line">          insertIndex -= step;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (insertIndex != i) &#123;</span><br><span class="line">          nums[insertIndex] = insertVal;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>希尔排序的时间复杂度是： O（nlogn），并且不稳定。</p>
+
+    </div>
+
+    
+    
+    
+
+      <div>
+        
+          <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+
+        
+      </div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%AE%97%E6%B3%95/" rel="tag"># 算法</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/04/21/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E9%98%9F%E5%88%97/" rel="prev" title="数据结构之队列">
+      <i class="fa fa-chevron-left"></i> 数据结构之队列
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/04/25/%E6%8E%92%E5%BA%8F%E4%B8%8B/" rel="next" title="排序下">
+      排序下 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%86%92%E6%B3%A1"><span class="nav-text">冒泡</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%80%89%E6%8B%A9"><span class="nav-text">选择</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8F%92%E5%85%A5"><span class="nav-text">插入</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B8%8C%E5%B0%94%E6%8E%92%E5%BA%8F"><span class="nav-text">希尔排序</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="swaggyW"
+      src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
+  <p class="site-author-name" itemprop="name">swaggyW</p>
+  <div class="site-description" itemprop="description">我这双眼，又能看清什么呢</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Alwaysbryant" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Alwaysbryant" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        <!--
+
+-->
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">swaggyW</span>
+</div>
+
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+-->
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="/js/ribbon.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+  <script defer src="//cdn.jsdelivr.net/gh/theme-next/theme-next-three@1/three.min.js"></script>
+    <script defer src="//cdn.jsdelivr.net/gh/theme-next/theme-next-three@1/canvas_sphere.min.js"></script>
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+
+
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/fireworks.js"></script>
+
+
+
+</body>
+</html>

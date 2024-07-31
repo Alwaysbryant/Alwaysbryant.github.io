@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/icon/32X32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/icon/16X16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="​    以抢购商品为例子，一步步分析redis实现分布式锁的过程。 ​    在redis中设置商品数量  set goods:01 100 。 假设有100件商品。 单机版​    假设下面这个简单的程序,就是一个很简单的逻辑。从Redis中获取数量，如果数量大于0，就可以购买，否则购买不了。 ​     1234567891011121314151617181920@Autowiredpri">
+<meta property="og:type" content="article">
+<meta property="og:title" content="redis分布式锁">
+<meta property="og:url" content="http://example.com/2021/07/09/redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/index.html">
+<meta property="og:site_name" content="swaggyW&#39;s Blog">
+<meta property="og:description" content="​    以抢购商品为例子，一步步分析redis实现分布式锁的过程。 ​    在redis中设置商品数量  set goods:01 100 。 假设有100件商品。 单机版​    假设下面这个简单的程序,就是一个很简单的逻辑。从Redis中获取数量，如果数量大于0，就可以购买，否则购买不了。 ​     1234567891011121314151617181920@Autowiredpri">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-07-09T07:23:07.000Z">
+<meta property="article:modified_time" content="2021-10-09T10:19:00.000Z">
+<meta property="article:author" content="swaggyW">
+<meta property="article:tag" content="redis">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2021/07/09/redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>redis分布式锁 | swaggyW's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">swaggyW's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">感谢来访~~~~~</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">17</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">14</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">42</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+  <a href="https://github.com/Alwaysbryant" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/09/redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
+      <meta itemprop="name" content="swaggyW">
+      <meta itemprop="description" content="我这双眼，又能看清什么呢">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="swaggyW's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          redis分布式锁
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-07-09 15:23:07" itemprop="dateCreated datePublished" datetime="2021-07-09T15:23:07+08:00">2021-07-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-10-09 18:19:00" itemprop="dateModified" datetime="2021-10-09T18:19:00+08:00">2021-10-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>​    以抢购商品为例子，一步步分析redis实现分布式锁的过程。</p>
+<p>​    在redis中设置商品数量  set goods:01 100 。 假设有100件商品。</p>
+<h4 id="单机版"><a href="#单机版" class="headerlink" title="单机版"></a>单机版</h4><p>​    假设下面这个简单的程序,就是一个很简单的逻辑。从Redis中获取数量，如果数量大于0，就可以购买，否则购买不了。</p>
+<p>​    </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Autowired</span></span><br><span class="line"><span class="keyword">private</span> StringRedisTemplate redisTemplate;</span><br><span class="line"></span><br><span class="line"><span class="meta">@GetMapping(&quot;/buy&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">buySales</span><span class="params">()</span> </span>&#123;</span><br><span class="line"><span class="comment">//从redis中获取商品的数量</span></span><br><span class="line">        String result = redisTemplate.opsForValue().get(<span class="string">&quot;goods:01&quot;</span>);</span><br><span class="line">        <span class="keyword">int</span> nums = (result == <span class="keyword">null</span>) ? <span class="number">0</span> : Integer.parseInt(result);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (nums &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="comment">//如果还有，商品数量-1</span></span><br><span class="line">            <span class="keyword">int</span> currentNums = nums - <span class="number">1</span>;</span><br><span class="line">            redisTemplate.opsForValue().set(<span class="string">&quot;goods:01&quot;</span>, String.valueOf(currentNums));</span><br><span class="line">            System.out.println(<span class="string">&quot;成功买到商品，还剩余 &quot;</span> + currentNums + <span class="string">&quot; 件&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;成功买到商品， 还剩 &quot;</span> + currentNums + <span class="string">&quot;件&quot;</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;购买失败、、、、&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span>  <span class="string">&quot;购买商品失败，因为xxxx原因......&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    只有一个客户端，来进行抢购商品。在多线程的条件下进行访问，会出现超卖和重复卖等问题。因此，对于多线程的单击模式下，我们可以通过锁来实现。可以使用synchronized，或者reentrantlock，这样可以解决在多个线程访问的情况下，保证同一时刻，只有一个线程拿到锁。其他线程阻塞。代码如下，把代码放在一个同步代码块中。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@GetMapping(&quot;/buy&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">buySales</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">            <span class="comment">//从redis中获取商品的数量</span></span><br><span class="line">            String result = redisTemplate.opsForValue().get(<span class="string">&quot;goods:01&quot;</span>);</span><br><span class="line">            <span class="keyword">int</span> nums = (result == <span class="keyword">null</span>) ? <span class="number">0</span> : Integer.parseInt(result);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (nums &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="comment">//如果还有，商品数量-1</span></span><br><span class="line">                <span class="keyword">int</span> currentNums = nums - <span class="number">1</span>;</span><br><span class="line">                redisTemplate.opsForValue().set(<span class="string">&quot;goods:01&quot;</span>, String.valueOf(currentNums));</span><br><span class="line">                System.out.println(<span class="string">&quot;成功买到商品，还剩余 &quot;</span> + currentNums + <span class="string">&quot; 件&quot;</span>);</span><br><span class="line">                <span class="keyword">return</span> <span class="string">&quot;成功买到商品， 还剩 &quot;</span> + currentNums + <span class="string">&quot;件&quot;</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                System.out.println(<span class="string">&quot;购买失败、、、、&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span>  <span class="string">&quot;购买商品失败，因为xxxx原因......&quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    在实际中，在高并发的情况下，肯定不止一台机器，那如果是有多个机器在提供这一服务呢？</p>
+<h4 id="分布式服务"><a href="#分布式服务" class="headerlink" title="分布式服务"></a>分布式服务</h4><p>​    假设有两个服务，同样的代码，都在被客户端访问，上述的代码中，通过this对象来上锁，可是现在有多个服务，this对象肯定不一样，那么本地的锁就失效了。</p>
+<hr>
+<p>现在有两个抢购商品服务，通过nginx来请求转发到两个服务上，从浏览器上访问nginx来转发到两个服务上。通过JMeter，发送100个请求，会出现一个商品重复买多次的情况。具体可以去试一试。原因上面已经讲过了，那么应该怎么解决？ 我们知道string类型中有一个指令叫做setnx， 他会添加一个不存在的key，那么请求访问过来的时候，通过判断该key是否存在来进行加锁，当使用完毕之后释放。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String MY_LOCK = <span class="string">&quot;my_lock&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@GetMapping(&quot;/buy&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">buySales</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">//指定value是当前访问的人,表示唯一标识</span></span><br><span class="line">    String mine = UUID.randomUUID().toString() + Thread.currentThread().getName();</span><br><span class="line"></span><br><span class="line">    <span class="comment">//通过setnx是否加锁?</span></span><br><span class="line">    Boolean flag = redisTemplate.opsForValue().setIfAbsent(MY_LOCK, mine);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!flag) &#123;</span><br><span class="line">        <span class="comment">//说明加锁失败</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;your operation was failed&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">//从redis中获取商品的数量</span></span><br><span class="line">    String result = redisTemplate.opsForValue().get(<span class="string">&quot;goods:01&quot;</span>);</span><br><span class="line">    <span class="keyword">int</span> nums = (result == <span class="keyword">null</span>) ? <span class="number">0</span> : Integer.parseInt(result);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (nums &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">//如果还有，商品数量-1</span></span><br><span class="line">        <span class="keyword">int</span> currentNums = nums - <span class="number">1</span>;</span><br><span class="line">        redisTemplate.opsForValue().set(<span class="string">&quot;goods:01&quot;</span>, String.valueOf(currentNums));</span><br><span class="line">        System.out.println(<span class="string">&quot;成功买到商品，还剩余 &quot;</span> + currentNums + <span class="string">&quot; 件&quot;</span>);</span><br><span class="line">        <span class="comment">//执行完毕，删除这个锁</span></span><br><span class="line">        redisTemplate.delete(MY_LOCK);</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;成功买到商品， 还剩 &quot;</span> + currentNums + <span class="string">&quot;件&quot;</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;购买失败、、、、&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span>  <span class="string">&quot;购买商品失败，因为xxxx原因......&quot;</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>​    那么，是否存在问题？ 当某一线程加锁之后，如果在执行业务的过程中出现了异常，那么就不会删除锁了，所以，我们应该把删除锁的操作加入到finally代码块中，这样，不管是否出现异常，都会删除锁。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@GetMapping(&quot;/buy&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">buySales</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">//指定value是当前访问的人,表示唯一标识</span></span><br><span class="line">    String mine = UUID.randomUUID().toString() + Thread.currentThread().getName();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">     	<span class="comment">//通过setnx是否加锁?</span></span><br><span class="line">        Boolean flag = redisTemplate.opsForValue().setIfAbsent(MY_LOCK, mine);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!flag) &#123;</span><br><span class="line">            <span class="comment">//说明加锁失败</span></span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;your operation was failed&quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">//从redis中获取商品的数量</span></span><br><span class="line">        String result = redisTemplate.opsForValue().get(<span class="string">&quot;goods:01&quot;</span>);</span><br><span class="line">        <span class="keyword">int</span> nums = (result == <span class="keyword">null</span>) ? <span class="number">0</span> : Integer.parseInt(result);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (nums &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="comment">//如果还有，商品数量-1</span></span><br><span class="line">            <span class="keyword">int</span> currentNums = nums - <span class="number">1</span>;</span><br><span class="line">            redisTemplate.opsForValue().set(<span class="string">&quot;goods:01&quot;</span>, String.valueOf(currentNums));</span><br><span class="line">            System.out.println(<span class="string">&quot;成功买到商品，还剩余 &quot;</span> + currentNums + <span class="string">&quot; 件&quot;</span>);</span><br><span class="line">            <span class="comment">//执行完毕，删除这个锁</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;成功买到商品， 还剩 &quot;</span> + currentNums + <span class="string">&quot;件&quot;</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;购买失败、、、、&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span>  <span class="string">&quot;购买商品失败，因为xxxx原因......&quot;</span>;</span><br><span class="line"></span><br><span class="line">    &#125;<span class="keyword">finally</span> &#123;</span><br><span class="line">        redisTemplate.delete(MY_LOCK);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>   异常说明机器还在工作，那如果设备都宕机了呢？ 如果在执行业务的过程中，突然服务器挂掉了，finally代码块也执行不了了，锁删除不了，其他线程都被阻塞。</p>
+<p>​    我们可以给锁加上一个过期时间。并且值得注意的是，我们加锁和设置过期时间必须是一个整体，即原子操作，我们只需要在加锁的时候，把代码改成这样就可以了</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Boolean flag = redisTemplate.opsForValue().setIfAbsent(MY_LOCK, mine,<span class="number">10L</span>, TimeUnit.SECONDS);</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>​    可是设置过期时间又出现了新的问题。我们设置了过期时间，如果某一线程A加锁进入业务代码，由于一些原因，导致过了时间还没有执行完业务代码。而此时线程B进行抢占锁发现这个key不存在，于是加锁进入到了业务逻辑，此时线程A执行业务完毕，准备释放锁，而A的锁早就失效了，所以A把B的锁给删掉了，这样就会出现问题。必须保证每一个线程删除的是自己的锁。因此，我们可以在释放锁的时候进行判断一下，保证是自己的锁。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">.....</span><br><span class="line">.....</span><br><span class="line"><span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (mine.equals(redisTemplate.opsForValue().get(MY_LOCK))) &#123;</span><br><span class="line">                redisTemplate.delete(MY_LOCK);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>​    前面说过，在分布式下，一定要保证操作的原子性，但是在finally代码块中进行判断的时候，可能会出现判断的服务和进行删除的服务不是一个服务，这个会导致误删除，因此要保证其原子性。</p>
+<p>​    怎么保证原子性，redis优势之一就是支持lua脚本，我们可以使用lua脚本来保证原子性。</p>
+<p>​    如果不用lua脚本呢？  我们可以使用redis中的事务。通过watch来监控MY_LOCK的状态，然后开启事务。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">....</span><br><span class="line">....</span><br><span class="line"><span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">                <span class="comment">//开启监控</span></span><br><span class="line">                redisTemplate.watch(MY_LOCK);</span><br><span class="line">                <span class="keyword">if</span> (mine.equals(redisTemplate.opsForValue().get(MY_LOCK))) &#123;</span><br><span class="line">                    redisTemplate.setEnableTransactionSupport(<span class="keyword">true</span>);<span class="comment">//开启事务支持</span></span><br><span class="line">                    redisTemplate.multi();</span><br><span class="line">                    redisTemplate.delete(MY_LOCK);</span><br><span class="line">                    List&lt;Object&gt; list = redisTemplate.exec();</span><br><span class="line">                    <span class="comment">//如果提交事务之后，返回的是null，则说明不是自己的锁</span></span><br><span class="line">                    <span class="keyword">if</span> (list == <span class="keyword">null</span>) <span class="keyword">continue</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">//删除成功，取消监控，并且退出循环</span></span><br><span class="line">                redisTemplate.unwatch();</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>​    最后，如何确定过期时间？ 如何根据业务代码来确定锁的存活时间，以及在网络环境下，肯定会出现延迟等原因，是否可以让锁自动续期？ 这也是一个很重要的问题。因为，网络是不可抗力，是解决不了的，必须确保锁的过期时间要大于业务时间。除此之外，在redis集群的条件下，如何保证数据的一致性？</p>
+<p>​    使用Redisson。代码如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Autowired</span></span><br><span class="line">Redisson redisson;</span><br><span class="line"></span><br><span class="line"><span class="meta">@GetMapping(&quot;/buy&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">buySales</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">//指定value是当前访问的人,表示唯一标识</span></span><br><span class="line">    String mine = UUID.randomUUID().toString() + Thread.currentThread().getName();</span><br><span class="line"></span><br><span class="line">    RLock lock = redisson.getLock(MY_LOCK);</span><br><span class="line">    lock.lock();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">//从redis中获取商品的数量</span></span><br><span class="line">        String result = redisTemplate.opsForValue().get(<span class="string">&quot;goods:01&quot;</span>);</span><br><span class="line">        <span class="keyword">int</span> nums = (result == <span class="keyword">null</span>) ? <span class="number">0</span> : Integer.parseInt(result);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (nums &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="comment">//如果还有，商品数量-1</span></span><br><span class="line">            <span class="keyword">int</span> currentNums = nums - <span class="number">1</span>;</span><br><span class="line">            redisTemplate.opsForValue().set(<span class="string">&quot;goods:01&quot;</span>, String.valueOf(currentNums));</span><br><span class="line">            System.out.println(<span class="string">&quot;成功买到商品，还剩余 &quot;</span> + currentNums + <span class="string">&quot; 件&quot;</span>);</span><br><span class="line">            <span class="comment">//执行完毕，删除这个锁</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;成功买到商品， 还剩 &quot;</span> + currentNums + <span class="string">&quot;件&quot;</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;购买失败、、、、&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span>  <span class="string">&quot;购买商品失败，因为xxxx原因......&quot;</span>;</span><br><span class="line"></span><br><span class="line">    &#125;<span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="keyword">if</span>(lock.isLocked()) &#123;<span class="comment">//如果当前锁在锁定的情况下</span></span><br><span class="line">            <span class="keyword">if</span> (lock.isHeldByCurrentThread()) &#123; <span class="comment">//并且是当前持有的线程</span></span><br><span class="line">	lock.unlock();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    redisson获取锁之后，如果不设置过期时间，会有一个看门狗机制，锁的有效时间默认是30秒，并且当超过三分之一的时间后，会重新进行续期。所以这就是Redison的优势。</p>
+<p>​    在redis集群中为了达到高可用性，保证了AP。而zookeeper作为分布式协调服务，保证了强一致性，即CP。</p>
+<hr>
+<p>over</p>
+
+    </div>
+
+    
+    
+    
+
+      <div>
+        
+          <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+
+        
+      </div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/redis/" rel="tag"># redis</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/06/02/factorybean%E5%92%8Cbeanfactory/" rel="prev" title="factorybean和beanfactory">
+      <i class="fa fa-chevron-left"></i> factorybean和beanfactory
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/07/12/AQS%E7%9A%84%E5%88%86%E6%9E%90/" rel="next" title="AQS的分析">
+      AQS的分析 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8D%95%E6%9C%BA%E7%89%88"><span class="nav-text">单机版</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E6%9C%8D%E5%8A%A1"><span class="nav-text">分布式服务</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="swaggyW"
+      src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
+  <p class="site-author-name" itemprop="name">swaggyW</p>
+  <div class="site-description" itemprop="description">我这双眼，又能看清什么呢</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Alwaysbryant" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Alwaysbryant" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        <!--
+
+-->
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">swaggyW</span>
+</div>
+
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+-->
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="/js/ribbon.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+  <script defer src="//cdn.jsdelivr.net/gh/theme-next/theme-next-three@1/three.min.js"></script>
+    <script defer src="//cdn.jsdelivr.net/gh/theme-next/theme-next-three@1/canvas_sphere.min.js"></script>
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+
+
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/fireworks.js"></script>
+
+
+
+</body>
+</html>

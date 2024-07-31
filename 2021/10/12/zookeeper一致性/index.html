@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/icon/32X32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/icon/16X16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="分布式理论​    分布式架构，将服务模块部署到不同的机器上，来缓解系统压力。在同一台机器上，不会存在数据的一致性等问题。但是由于分布式中，服务部署在不同机器上，网络原因是不可抗因素。 ​    CAP，一致性、可用性、分区容错性。必须要保证由于故障导致某些节点断掉以后，每个网络区域都能够对外提供服务，所以分区容错性是前提。而要保证高可用性，数据的一致性就得不到保证；要保证一致性，那么高可用性必然">
+<meta property="og:type" content="article">
+<meta property="og:title" content="zookeeper一致性">
+<meta property="og:url" content="http://example.com/2021/10/12/zookeeper%E4%B8%80%E8%87%B4%E6%80%A7/index.html">
+<meta property="og:site_name" content="swaggyW&#39;s Blog">
+<meta property="og:description" content="分布式理论​    分布式架构，将服务模块部署到不同的机器上，来缓解系统压力。在同一台机器上，不会存在数据的一致性等问题。但是由于分布式中，服务部署在不同机器上，网络原因是不可抗因素。 ​    CAP，一致性、可用性、分区容错性。必须要保证由于故障导致某些节点断掉以后，每个网络区域都能够对外提供服务，所以分区容错性是前提。而要保证高可用性，数据的一致性就得不到保证；要保证一致性，那么高可用性必然">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/zookeeper/2PC.PNG">
+<meta property="og:image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/zookeeper/3PC.PNG">
+<meta property="og:image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/zookeeper/paxos01.PNG">
+<meta property="og:image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/zookeeper/paxos02.PNG">
+<meta property="og:image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/zookeeper/paxos03.PNG">
+<meta property="og:image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/zookeeper/server.PNG">
+<meta property="og:image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/zookeeper/1.PNG">
+<meta property="og:image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/zookeeper/2.PNG">
+<meta property="og:image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/zookeeper/3.PNG">
+<meta property="og:image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/zookeeper/4.PNG">
+<meta property="article:published_time" content="2021-10-12T07:47:27.000Z">
+<meta property="article:modified_time" content="2021-10-15T13:34:32.000Z">
+<meta property="article:author" content="swaggyW">
+<meta property="article:tag" content="zookeeper">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/zookeeper/2PC.PNG">
+
+<link rel="canonical" href="http://example.com/2021/10/12/zookeeper%E4%B8%80%E8%87%B4%E6%80%A7/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>zookeeper一致性 | swaggyW's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">swaggyW's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">感谢来访~~~~~</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">17</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">14</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">42</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+  <a href="https://github.com/Alwaysbryant" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/10/12/zookeeper%E4%B8%80%E8%87%B4%E6%80%A7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
+      <meta itemprop="name" content="swaggyW">
+      <meta itemprop="description" content="我这双眼，又能看清什么呢">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="swaggyW's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          zookeeper一致性
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-10-12 15:47:27" itemprop="dateCreated datePublished" datetime="2021-10-12T15:47:27+08:00">2021-10-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-10-15 21:34:32" itemprop="dateModified" datetime="2021-10-15T21:34:32+08:00">2021-10-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/zookeeper/" itemprop="url" rel="index"><span itemprop="name">zookeeper</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h4 id="分布式理论"><a href="#分布式理论" class="headerlink" title="分布式理论"></a>分布式理论</h4><p>​    分布式架构，将服务模块部署到不同的机器上，来缓解系统压力。在同一台机器上，不会存在数据的一致性等问题。但是由于分布式中，服务部署在不同机器上，网络原因是不可抗因素。</p>
+<p>​    CAP，一致性、可用性、分区容错性。必须要保证由于故障导致某些节点断掉以后，每个网络区域都能够对外提供服务，所以分区容错性是前提。而要保证高可用性，数据的一致性就得不到保证；要保证一致性，那么高可用性必然有所影响。</p>
+<p>   eureka和zookeeper可以作为分布式系统中的注册中心。注册中心负责服务的注册与查找，服务提供者会在注册中心注册自己的服务，消费者向注册中心订阅自己的服务，而注册中心就是一个服务列表。</p>
+<p>​    两者比较：</p>
+<p>​    eureka保证了CP，即可用性，在eureka中，每个节点都是平等的，当一个节点挂掉后，也不会影响正常工作，但是查询到的数据不一定是最新的。并且eureka有自我保护机制，当有85%的节点都没有正常工作时，会判定会注册中心网络故障。</p>
+<p>​    zookeeper保证了AP，即一致性，在zookeeper中，节点有三种角色，leader、follower、observer，leader即为领导者，提供读和写的服务，负责投票的发起和决议，更新系统的状态；follower即跟随者，主要负责读服务，如果遇到写服务，则会将请求转发给leader，并且可以参加选举投票；observer和follower一样，但是不参加选举投票。如果leader挂掉，会重新投票选举出新的leader。并且在整个过程中，系统是不可用的。但是保证了数据的一致性。</p>
+<h4 id="一致性"><a href="#一致性" class="headerlink" title="一致性"></a>一致性</h4><p>​    如何保证一致性。有几种方案。</p>
+<h5 id="2PC"><a href="#2PC" class="headerlink" title="2PC"></a>2PC</h5><p>​    2PC，2 Phase Commit，2阶段提交。总共有两个阶段。</p>
+<p>​    阶段一： 在执行一个分布式事务时，事务的发起者会向参与者发送一个prepare请求，参与者收到请求之后，会执行事务，但是不提交，执行后给发起者回复；</p>
+<p>​    阶段二： 发起者会根据参与者的反馈来作出事务操作。如果所有参与者都没问题，则直接提交事务。如果某一参与者有异常等问题，则直接回滚。</p>
+<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/zookeeper/2PC.PNG" alt="2pc"></p>
+<p>   2PC存在的问题： </p>
+<pre><code>   1. 阻塞问题，在第一阶段的时候，参与者收到prepare请求之后，执行事务但是不提交，就会一直阻塞，这样会一直占用资源，并且如果这个时候发起者挂掉了，那么参与者将一直等待提交。
+      2. 发起者挂掉了，就直接无了。
+      3. 如果二阶段所有参与者都可以成功提交，那么发起者就会向参与者发送提交请求，此时发起者发了一半挂掉了，剩下的参与者将不会提交事务，这样就会导致数据不一致。
+</code></pre>
+<h5 id="3PC"><a href="#3PC" class="headerlink" title="3PC"></a>3PC</h5><p>​    3PC，三阶段提交，与二节点提交不同的是，在第一阶段，发起者不会发送事务内容，会先确定参与者的状态。并且引入了超时机制。</p>
+<p>​    一阶段（canCommit）： 发起者（协调者）向所有参与者发送CanCommit请求，参与者收到后，判断自己是否可以执行事务，如果是YES，则让自己处于预备状态，在一定的时间内，如果没有做出反应，则为NO；</p>
+<p>​    二阶段（preCommit）： 发起者收到参与者的状态后，如果都可以，则向参与者发送prepare请求，让参与者先执行事务不提交，如果成功地执行了事务操作，则返回一个ACK给发起者；如果等待超时之后，发起者得不到响应，则判定为不成功，中断事务</p>
+<p>​    三阶段（doCommit）： 根据参与者的反馈，如果有参与者不能正常执行事务，则直接回滚；否则就发送提交请求。</p>
+<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/zookeeper/3PC.PNG" alt="3pc"></p>
+<p>3PC和2PC的比较：</p>
+<p>​     3PC引入了超时机制，所以不会造成资源长期占用得不到释放。相比2PC来说减少了资源的阻塞问题。并且主要解决了单点故障问题。但是在数据的一致性上面还是得不到解决。在prepare阶段，如果此时有一个参与者可以执行事务，准备向发起者反馈，结果此时由于网络原因，超时了，由于发起者没有收到它的消息，所以会回滚事务，但是参与者自己提交了，这样就会出现数据的不一致。</p>
+<h5 id="paxos算法"><a href="#paxos算法" class="headerlink" title="paxos算法"></a>paxos算法</h5><p>​    paxos算法是通过消息传递，并且具有高度容错性的一致性算法。paxos算法中有三个角色，proposer提案者、Acceptor表决者、learner学习者。learner主要学习表决这批准的提案。paxos算法总共有两个阶段，分为：prepare、accept。</p>
+<p>​    <strong>prepare阶段</strong></p>
+<p>​        提案者负责提案proposal，并且每一个提案都有一个编号N，这个编号具有唯一性、单调递增。该阶段，提案者会向表决者发送proposal编号N，表决者收到提案编号后，会与本地的编号maxN进行比较，如果N &gt; maxN，则会接收accept提案，并且记录编号在本地，即maxN = N。并把当前最大提案编号maxN响应给提案者。</p>
+<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/zookeeper/paxos01.PNG" alt="prepare">     </p>
+<p><strong>accept阶段</strong></p>
+<p>​    当提案者收到的批准数超过表决者的一半时，即有是超过一半的表决者批准了提案者的提案，提案者会将提案编号和内容一起发送给表决者。表决者收到后，会比较提案编号，如果本地最大编号小于等于收到的提案编号，则批准该提案，并执行提案内容，但是不提交。并将情况返回给提案者，不满足则返回NO或者不回应。</p>
+<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/zookeeper/paxos02.PNG" alt="02"></p>
+<p>​    当提案者收到超过半数的表决者批准提案后(提案者会通过提案，此时三个节点有两个节点通过提案，则会进行提交)，会向所有的表决者发送提交请求，向已经批准了的表决者发送提案编号就可以了，而那些没有批准的，则发送提案编号和提案内容。让它们无条件提交。</p>
+<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/zookeeper/paxos03.PNG" alt="03"></p>
+<p>​    <strong>如果没有超过半数，则会重新进入prepare阶段，进行提案的表决。</strong></p>
+<h6 id="paxos死循环"><a href="#paxos死循环" class="headerlink" title="paxos死循环"></a>paxos死循环</h6><p>​    paxos会出现死循环问题。提案者P1提出M1，在prepare阶段被表决者批准。正准备进入二阶段；此时提案者P2又提出了M2，我们知道，提案编号是单调递增的，所以M2肯定是大于M1的，此时M2也在prepare阶段被批准，由于M2大于M1，所以会覆盖M1，而M1进入二阶段准备时，表决者发现提案编号小于本地编号，于是会拒绝，M1重新进入prepare阶段，又会覆盖M2，M2在二阶段又会不被批准，M2进入prepare阶段。。。这样就形成了死循环。</p>
+<h4 id="ZooKeeper"><a href="#ZooKeeper" class="headerlink" title="ZooKeeper"></a>ZooKeeper</h4><p>​    zookeeper并没有直接用paxos算法， 而是专门定制了一致性协议，叫做ZAB（Zookeeper Atomic-Broadcast）协议，原子广播协议。ZAB协议中有三个角色，Leader领导者、Follower跟随者、Observer观察者。</p>
+<p>​    Leader： 集群中的领导者，唯一能处理写请求，并且可以发起投票；</p>
+<p>​    Follower： 能够接收客户端请求，如果是读请求，则会自己进行处理；如果是写请求则会将请求转发给Leader，让Leader进行处理。可以参加选举投票。</p>
+<p>​    Observer： 和Follower一样，但是没有投票权，也不能参加选举。</p>
+<p>​    ZAB协议中有两种模式：<strong>消息广播模式</strong> 和 <strong>崩溃恢复</strong>。</p>
+<h6 id="消息广播模式"><a href="#消息广播模式" class="headerlink" title="消息广播模式"></a>消息广播模式</h6><p>​    主要是同步数据，只有leader能处理写请求，leader会将写请求广播出去，如果有超过一般的follower同意更新，则会对follower和observer进行数据的同步和更新。所使用的原理和paxos算法一致，会有一个全局唯一、单调递增的事务ID： <strong>zxid</strong>，并且每台机器都会有一个自己的id：<strong>myid</strong>。</p>
+<p>​    每个提案都是通过zxid来进行排序处理的。</p>
+<h6 id="崩溃恢复"><a href="#崩溃恢复" class="headerlink" title="崩溃恢复"></a>崩溃恢复</h6><p>​    如果运行过程中，集群中的follower和observer有节点挂掉了，因为leader还在正常运行，当挂掉的节点恢复后，leader可以维护。</p>
+<p>​    但是leader挂掉了该怎么办？leader在整个zookeeper集群中只有一个，leader挂掉此时会暂停服务，进入LOOKING状态，然后进行leader的选举。</p>
+<p>​    leader是如何选举的呢？</p>
+<p>​    <strong>初始化选举</strong></p>
+<p>​    假设现在zookeeper集群中有三台服务器，他们的myid的值如图，因为初始化，所以它们的zxid 都为0。</p>
+<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/zookeeper/server.PNG" alt="server"></p>
+<p>​    首先，每个服务器节点都会把票投给自己，然后将自己的投票广播出去，收到其他节点的投票之后，会与自己的作比较，<strong>会先比较zxid，如果zxid比自己大，则把自己的投票改成zxid大的那个，如果zxid一样大，则会比较myid，当发现获得票数超过一半后，就会变成leader</strong>。</p>
+<p>​    给自己投票以后广播出去</p>
+<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/zookeeper/1.PNG" alt="01"></p>
+<p>当收到其他节点的投票之后，得到的投票情况如下</p>
+<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/zookeeper/2.PNG" alt="2"></p>
+<p>​    进行比较之后，server1和server2更改了自己的投票。如下</p>
+<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/zookeeper/3.PNG" alt="3"></p>
+<p>​    会再次进行广播，那么此时server3的票数已经超过一半，所以server3称为leader。</p>
+<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/zookeeper/4.PNG" alt="4"></p>
+<p><strong>崩溃恢复</strong></p>
+<p>​    如果在运行过程中leader挂掉了怎么办？ 系统会暂停服务，进入LOOKING状态，开始选举leader。ZAB是如何保证选举新leader后，数据的一致性的呢？</p>
+<p>​    <strong>ZAB可以确保已经被leader提交的数据最终能被所有节点提交</strong></p>
+<p>​       假设server3正在向server1和server2发送提案，server1成功收到提案，而server2还没收到提案server3就挂掉了，此时暂停服务，进行选举，很明显，server1的zxid肯定大于server2，所以server1肯定是新的leader。这样就确保了leader提交的数据不会丢失，当server3重启，就会称为follower，server1通过广播方式将原先的提案发送给follower。</p>
+<p>​    <strong>ZAB可以跳过被丢弃的提案</strong></p>
+<p>​    假设还是server3是leader，server3通过了提案P1，并且发送给server1和server2要提交的请求，但是此时server3挂掉了，经过选举之后，有一个成为leader，此时server3恢复，server3想要执行提案P1，但是此时的leader却没有这个提案，为了保证数据的一致性，这个提案会被丢弃。</p>
+<hr>
+<p>zookeeper的功能挺强大的，有一个watcher机制，事件监听器，zookeeper的数据结构是一个个znode节点，znode节点包含了事务id，节点id，创建时间等等，可以通过监听器对node节点进行监听，实现选举、分布式锁等。</p>
+
+    </div>
+
+    
+    
+    
+
+      <div>
+        
+          <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+
+        
+      </div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/zookeeper/" rel="tag"># zookeeper</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/10/11/%E7%BA%BF%E7%A8%8B%E6%B1%A0/" rel="prev" title="线程池">
+      <i class="fa fa-chevron-left"></i> 线程池
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/10/20/%E4%B8%89%E6%95%B0%E4%B9%8B%E5%92%8C/" rel="next" title="三数之和">
+      三数之和 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E7%90%86%E8%AE%BA"><span class="nav-text">分布式理论</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%80%E8%87%B4%E6%80%A7"><span class="nav-text">一致性</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#2PC"><span class="nav-text">2PC</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3PC"><span class="nav-text">3PC</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#paxos%E7%AE%97%E6%B3%95"><span class="nav-text">paxos算法</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#paxos%E6%AD%BB%E5%BE%AA%E7%8E%AF"><span class="nav-text">paxos死循环</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ZooKeeper"><span class="nav-text">ZooKeeper</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E5%B9%BF%E6%92%AD%E6%A8%A1%E5%BC%8F"><span class="nav-text">消息广播模式</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#%E5%B4%A9%E6%BA%83%E6%81%A2%E5%A4%8D"><span class="nav-text">崩溃恢复</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="swaggyW"
+      src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
+  <p class="site-author-name" itemprop="name">swaggyW</p>
+  <div class="site-description" itemprop="description">我这双眼，又能看清什么呢</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Alwaysbryant" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Alwaysbryant" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        <!--
+
+-->
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">swaggyW</span>
+</div>
+
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+-->
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="/js/ribbon.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+  <script defer src="//cdn.jsdelivr.net/gh/theme-next/theme-next-three@1/three.min.js"></script>
+    <script defer src="//cdn.jsdelivr.net/gh/theme-next/theme-next-three@1/canvas_sphere.min.js"></script>
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+
+
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/fireworks.js"></script>
+
+
+
+</body>
+</html>

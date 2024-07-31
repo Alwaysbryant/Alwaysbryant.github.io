@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/icon/32X32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/icon/16X16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="MVCC​    MVCC,多版本并发控制，主要是为了解决读写冲突不加锁。这里所指的读是快照读。 ​    快照读和当前读就不解释了。 ​    MVCC是一种较为抽象的概念。其意义是为了维持一个数据的多个版本。这样可以在不加锁的情况下，实现读写不冲突。 ​    MVCC实现了事务的隔离级别。在mysql中MVCC的实现使用到了三个隐式字段、read view、undo日志">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MVCC">
+<meta property="og:url" content="http://example.com/2021/11/30/MVCC/index.html">
+<meta property="og:site_name" content="swaggyW&#39;s Blog">
+<meta property="og:description" content="MVCC​    MVCC,多版本并发控制，主要是为了解决读写冲突不加锁。这里所指的读是快照读。 ​    快照读和当前读就不解释了。 ​    MVCC是一种较为抽象的概念。其意义是为了维持一个数据的多个版本。这样可以在不加锁的情况下，实现读写不冲突。 ​    MVCC实现了事务的隔离级别。在mysql中MVCC的实现使用到了三个隐式字段、read view、undo日志">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-11-30T12:44:08.000Z">
+<meta property="article:modified_time" content="2021-11-30T13:56:48.000Z">
+<meta property="article:author" content="swaggyW">
+<meta property="article:tag" content="mysql">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2021/11/30/MVCC/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>MVCC | swaggyW's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">swaggyW's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">感谢来访~~~~~</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">17</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">14</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">42</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+  <a href="https://github.com/Alwaysbryant" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/30/MVCC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
+      <meta itemprop="name" content="swaggyW">
+      <meta itemprop="description" content="我这双眼，又能看清什么呢">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="swaggyW's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MVCC
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-11-30 20:44:08 / 修改时间：21:56:48" itemprop="dateCreated datePublished" datetime="2021-11-30T20:44:08+08:00">2021-11-30</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/mysql/" itemprop="url" rel="index"><span itemprop="name">mysql</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="MVCC"><a href="#MVCC" class="headerlink" title="MVCC"></a>MVCC</h3><p>​    MVCC,多版本并发控制，主要是为了解决读写冲突不加锁。这里所指的读是快照读。</p>
+<p>​    快照读和当前读就不解释了。</p>
+<p>​    MVCC是一种较为抽象的概念。其意义是为了维持一个数据的多个版本。这样可以在不加锁的情况下，实现读写不冲突。</p>
+<p>​    MVCC实现了事务的隔离级别。在mysql中MVCC的实现使用到了<strong>三个隐式字段</strong>、<strong>read view</strong>、<strong>undo日志</strong></p>
+<span id="more"></span>
+
+<h4 id="三个隐式字段"><a href="#三个隐式字段" class="headerlink" title="三个隐式字段"></a>三个隐式字段</h4><pre><code>##### DB_TRX_ID 最后一次修改或者插入的事务id，大小为6B
+</code></pre>
+<h5 id="DB-ROLL-PTR-回滚指针，指向上一次写入undo-log的最新数据，如果该行数据没有被更新过，则为null-大小为7B"><a href="#DB-ROLL-PTR-回滚指针，指向上一次写入undo-log的最新数据，如果该行数据没有被更新过，则为null-大小为7B" class="headerlink" title="DB_ROLL_PTR 回滚指针，指向上一次写入undo_log的最新数据，如果该行数据没有被更新过，则为null,大小为7B"></a>DB_ROLL_PTR 回滚指针，指向上一次写入undo_log的最新数据，如果该行数据没有被更新过，则为null,大小为7B</h5><h5 id="DB-ROW-ID-如果没有指定主键，则InnoDB会根据该字段生成一个聚簇索引。大小为7B"><a href="#DB-ROW-ID-如果没有指定主键，则InnoDB会根据该字段生成一个聚簇索引。大小为7B" class="headerlink" title="DB_ROW_ID 如果没有指定主键，则InnoDB会根据该字段生成一个聚簇索引。大小为7B"></a>DB_ROW_ID 如果没有指定主键，则InnoDB会根据该字段生成一个聚簇索引。大小为7B</h5><h4 id="read-view"><a href="#read-view" class="headerlink" title="read view"></a>read view</h4><p>​    read view 是读视图，在进行快照读时，会产生读视图，记录并且维护了一个全局唯一自增id，通过readview可以得到当前快照读可以读取到哪个版本的记录。</p>
+<p>​    <strong>当进行快照读时，会生成read view，记录当前活跃的事务id，并且根据上述提到的id，与当前活跃的id进行比较，判断活跃的事务id是否对当前id可见。说白了，就是来做可见性判断的。</strong></p>
+<p>​    <strong>主要有两个参数： m_up_limit_id(活跃列表中的最小活跃的id)、 m_low_limit_id(目前出现过的最大的事务id的下一个，即maxID+1)</strong></p>
+<p>​    通过与这两个id的比较来判断当前事务对活跃事务的可见性。</p>
+<h4 id="undo-log"><a href="#undo-log" class="headerlink" title="undo_log"></a>undo_log</h4><p>​    undo_log主要分为插入insert 和 update。</p>
+<ol>
+<li><p>对于insert，当事务被提交之后，undo_log就会被丢弃。因为插入操作对其他事务时不可见的，为什么不可见可以参照上述可见性算法。</p>
+</li>
+<li><p>对于update，或者delete，产生的undo_log，可以需要提供MVCC机制，即在进行快照读的时候可能还需要，所以不会删除。</p>
+<p><strong>为了节省磁盘空间，对于update undo_log, 有一个purge线程专门来进行清理，而purge线程也维护了一个自己的read view，并且在进行update或delete操作时，会设置老记录的delete_bit = true, 与此同时，read view的可见性也得到满足时，那么就会安全的删除undo_log</strong></p>
+</li>
+</ol>
+<h5 id=""><a href="#" class="headerlink" title=""></a></h5><h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>​    所以整个过程可以总结成如下：</p>
+<p><strong>当进行update或者delete操作时，首先会给这行数据加锁，然后通过undo_log将当前数据记录到日志中，记录在undo_log的最新数据的DB_ROLL_PTR指向前一条数据，所以可以看出，记录的数据会形成一个单向链表，而链表头就是最新记录的数据。然后，就会进行数据的修改，最后释放锁。</strong></p>
+<hr>
+<h3 id="RR和RC"><a href="#RR和RC" class="headerlink" title="RR和RC"></a>RR和RC</h3><p>​    我们都知道RR解决了不可重复读，RC则没有解决，其实MVCC对于两者的实现逻辑是完全一样的。只是在进行快照读时，两者生成read view的时机不同。</p>
+<p><strong>对于RR： 在对数据进行第一次快照读的时候，就会生成一个read view， 并且记录当前活跃的事务id，第二次、第三次… 在对这条数据进行快照读时，得到的read view其实都是同一个，这也是为什么RR可以解决不可重复读的问题。</strong></p>
+<p><strong>对于RC： 则每次进行快照读的时候，都会生成一个新的read view，所以每次读取的数据不一定是一样的。</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">PS: 那么mysql中默认使用RR，就不怕幻读吗？</span><br><span class="line">Answer： 因为对数据的读取还有可能是当前读，当前读保证了每次读取的数据都是最新的。但是这样就会出现幻读，MySQL通过next-key lock来解决幻读。</span><br><span class="line">    对于快照读，这个不用担心，而对于当前读，像 for update/lock in share mode, 可以通过行锁来锁定该行数据，并且锁定他们的间隙，即gap lock。 next-key = row + gap。不让你插入数据，你就不可能产生幻读</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">最后一个问题？</span><br><span class="line">为什么mysql采用RR为默认隔离级别？</span><br><span class="line">    不论是RR还是RC，其实read view的实现逻辑是一样的，但是RR对资源的消耗会更少。</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+      <div>
+        
+          <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+
+        
+      </div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/mysql/" rel="tag"># mysql</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/11/29/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%80%BB%E7%BB%93/" rel="prev" title="总结">
+      <i class="fa fa-chevron-left"></i> 总结
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/03/30/LeetCode%E7%AC%AC116%E9%A2%98/" rel="next" title="LeetCode第116题">
+      LeetCode第116题 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#MVCC"><span class="nav-text">MVCC</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%89%E4%B8%AA%E9%9A%90%E5%BC%8F%E5%AD%97%E6%AE%B5"><span class="nav-text">三个隐式字段</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#DB-ROLL-PTR-%E5%9B%9E%E6%BB%9A%E6%8C%87%E9%92%88%EF%BC%8C%E6%8C%87%E5%90%91%E4%B8%8A%E4%B8%80%E6%AC%A1%E5%86%99%E5%85%A5undo-log%E7%9A%84%E6%9C%80%E6%96%B0%E6%95%B0%E6%8D%AE%EF%BC%8C%E5%A6%82%E6%9E%9C%E8%AF%A5%E8%A1%8C%E6%95%B0%E6%8D%AE%E6%B2%A1%E6%9C%89%E8%A2%AB%E6%9B%B4%E6%96%B0%E8%BF%87%EF%BC%8C%E5%88%99%E4%B8%BAnull-%E5%A4%A7%E5%B0%8F%E4%B8%BA7B"><span class="nav-text">DB_ROLL_PTR 回滚指针，指向上一次写入undo_log的最新数据，如果该行数据没有被更新过，则为null,大小为7B</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#DB-ROW-ID-%E5%A6%82%E6%9E%9C%E6%B2%A1%E6%9C%89%E6%8C%87%E5%AE%9A%E4%B8%BB%E9%94%AE%EF%BC%8C%E5%88%99InnoDB%E4%BC%9A%E6%A0%B9%E6%8D%AE%E8%AF%A5%E5%AD%97%E6%AE%B5%E7%94%9F%E6%88%90%E4%B8%80%E4%B8%AA%E8%81%9A%E7%B0%87%E7%B4%A2%E5%BC%95%E3%80%82%E5%A4%A7%E5%B0%8F%E4%B8%BA7B"><span class="nav-text">DB_ROW_ID 如果没有指定主键，则InnoDB会根据该字段生成一个聚簇索引。大小为7B</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#read-view"><span class="nav-text">read view</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#undo-log"><span class="nav-text">undo_log</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link"><span class="nav-text"></span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RR%E5%92%8CRC"><span class="nav-text">RR和RC</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="swaggyW"
+      src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
+  <p class="site-author-name" itemprop="name">swaggyW</p>
+  <div class="site-description" itemprop="description">我这双眼，又能看清什么呢</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Alwaysbryant" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Alwaysbryant" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        <!--
+
+-->
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">swaggyW</span>
+</div>
+
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+-->
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="/js/ribbon.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+  <script defer src="//cdn.jsdelivr.net/gh/theme-next/theme-next-three@1/three.min.js"></script>
+    <script defer src="//cdn.jsdelivr.net/gh/theme-next/theme-next-three@1/canvas_sphere.min.js"></script>
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+
+
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/fireworks.js"></script>
+
+
+
+</body>
+</html>

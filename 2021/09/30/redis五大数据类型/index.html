@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/icon/32X32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/icon/16X16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="前述  redis作为当下十分热门的数据库缓存中间件，在很多项目中都有使用到。并且redis的性能也十分强大，可以缓解关系型数据库的IO压力。与Memcached相比，redis支持多种数据结构，并且redis可以周期性的将更新后的数据写入到磁盘中，即可以做持久化的操作。本文主要谈谈redis常见的五大数据结构，并且可以应用到哪些场景。  redis的五大数据结构有： string、list、se">
+<meta property="og:type" content="article">
+<meta property="og:title" content="redis五大数据类型">
+<meta property="og:url" content="http://example.com/2021/09/30/redis%E4%BA%94%E5%A4%A7%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/index.html">
+<meta property="og:site_name" content="swaggyW&#39;s Blog">
+<meta property="og:description" content="前述  redis作为当下十分热门的数据库缓存中间件，在很多项目中都有使用到。并且redis的性能也十分强大，可以缓解关系型数据库的IO压力。与Memcached相比，redis支持多种数据结构，并且redis可以周期性的将更新后的数据写入到磁盘中，即可以做持久化的操作。本文主要谈谈redis常见的五大数据结构，并且可以应用到哪些场景。  redis的五大数据结构有： string、list、se">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/redis%E7%9A%84%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/wps1.jpg">
+<meta property="og:image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/redis%E7%9A%84%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/wps2.jpg">
+<meta property="article:published_time" content="2021-09-30T06:13:33.000Z">
+<meta property="article:modified_time" content="2021-10-08T11:15:40.000Z">
+<meta property="article:author" content="swaggyW">
+<meta property="article:tag" content="redis">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/redis%E7%9A%84%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/wps1.jpg">
+
+<link rel="canonical" href="http://example.com/2021/09/30/redis%E4%BA%94%E5%A4%A7%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>redis五大数据类型 | swaggyW's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">swaggyW's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">感谢来访~~~~~</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">17</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">14</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">42</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+  <a href="https://github.com/Alwaysbryant" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/09/30/redis%E4%BA%94%E5%A4%A7%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
+      <meta itemprop="name" content="swaggyW">
+      <meta itemprop="description" content="我这双眼，又能看清什么呢">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="swaggyW's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          redis五大数据类型
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-09-30 14:13:33" itemprop="dateCreated datePublished" datetime="2021-09-30T14:13:33+08:00">2021-09-30</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-10-08 19:15:40" itemprop="dateModified" datetime="2021-10-08T19:15:40+08:00">2021-10-08</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="前述"><a href="#前述" class="headerlink" title="前述"></a>前述</h2><p>  redis作为当下十分热门的数据库缓存中间件，在很多项目中都有使用到。并且redis的性能也十分强大，可以缓解关系型数据库的IO压力。与Memcached相比，redis支持多种数据结构，并且redis可以周期性的将更新后的数据写入到磁盘中，即可以做持久化的操作。本文主要谈谈redis常见的五大数据结构，并且可以应用到哪些场景。</p>
+<hr>
+<p>redis的五大数据结构有： string、list、set、hash、zset</p>
+<h2 id="1-String"><a href="#1-String" class="headerlink" title="1. String"></a>1. String</h2><p>  string类型的数据大家应该很熟悉，在java中，String是字符串，在redis中，也是一样的，是redis中最基本的数据结构。redis是一款基于key-value键值对的开源框架。string类型即一个key对应一个value。并且value的最大容量是512M。并且string类型是二进制安全的，所以我们可以使用string类型来存储二进制文件或者序列化后的对象。</p>
+<hr>
+<h3 id="1-1-string常用命令"><a href="#1-1-string常用命令" class="headerlink" title="1.1 string常用命令"></a>1.1 string常用命令</h3><p>  set 命令。通过set命令可以在redis中添加键值对。如果我要添加一个key-value是”k1”-“v1” 即可用如下操作。<code>set k1 v1</code> </p>
+<p>  可以添加键值对，那么就可以通过key来获取对应的value。使用get命令即可获取到与key对应的value</p>
+<p><code>get k1</code>   </p>
+<p>  incr <key>  可以将key中存储的数字+1 反之， decr <key> 即为-1。</p>
+<p>如果想知道我们的key的长度，可以使用命令 strlen key 来获取。</p>
+<p>  除此之外，应用比较多得有一个指令。就是setnx，在高并发的情况下，我们通常需要添加分布式锁，而redis即可作为分布式锁，我们可以添加某一个键值对，为了防止某一线程抢占到该锁，在运行业务中途发生宕机等异常，锁得不到释放，导致其他线程也拿不到锁，我们可以为key设置上过期时间，而redis是单线程的，我们每一条指令都是一个原子性操作。所以使用setnx添加一个不存在的键值对，并设置过期时间。这样可以保证原子操作。当然，仅仅靠这个保证不了多线程访问锁的问题。这里不是讨论的重点。</p>
+<p>  string中还有很多其他的命令，如mset 可以设置多个键值对，mget可以通过多个key获得对应的value。等等，不过多赘述。</p>
+<h3 id="1-2-string数据结构"><a href="#1-2-string数据结构" class="headerlink" title="1.2 string数据结构"></a>1.2 string数据结构</h3><p>  string的数据结构为简单动态字符串，即可以实现自动扩容。与java中的string不一样，redis中的字符串是可以修改的。类似于java中的ArrayList。 最大空间为512M，当字符串的大小小于1M时，会进行加倍扩容。而当字符串大小大于1M时，则每次会增加1M的空间。</p>
+<h3 id="1-3-应用场景"><a href="#1-3-应用场景" class="headerlink" title="1.3 应用场景"></a>1.3 应用场景</h3><p>  我们知道string有一个让key对应的value+1的命令，即incr。因此，我们可以使用string的这一特性来做评论的点赞，和商品的喜欢数。除此之外，例如有一个在线教育的网站，在网页的首页我们会显示一些热门老师即热门课程，我们可以使用string类型来存放这些数据。</p>
+<hr>
+<h2 id="2-list"><a href="#2-list" class="headerlink" title="2. list"></a>2. list</h2><p>  list即一个key可以对应多个value。并且可以按照插入的顺序排序。我们可以从头部插入，也可以从尾部插入。由此可以得出结论，list其实是一个双向链表。对两端的操作性能会比较高。</p>
+<h3 id="2-1-常用命令"><a href="#2-1-常用命令" class="headerlink" title="2.1 常用命令"></a>2.1 常用命令</h3><p>  我们可以对一个key插入多个值，并且可以从左右两边插入，使用lpush/ rpush，从左/右边插入值。</p>
+<p>  lpop/rpop 即从左/右边弹出一个值，弹出的意思是弹出即不存在与key中，并且当key中没有value后，这个key就会被删除。</p>
+<p>  rpoplpush 看这个指令应该就可以看出是从右边弹出一个值加入到左边。</p>
+<p>  还有很多指令，这里就不过多赘述。</p>
+<h3 id="2-2-数据结构"><a href="#2-2-数据结构" class="headerlink" title="2.2 数据结构"></a>2.2 数据结构</h3><p>  前面说道，list其实是一个双向链表，但是其实和我们在数据结构或者java中所熟知的链表是有点区别的。在数据结构中，对于一个双向链表，我们是由一个一个节点所构成的，一个节点分为三部分，指向前驱结点的指针、存放数据的空间、指向后继节点的指针。而redis中的list所采用的数据结构可以叫做快速链表。ziplist，是一块连续的内存空间，当我们数据量比较少的时候，此时的数据结构是ziplist，而当数据量变大，很多个ziplist就形成一个双向链表，双向链表的每一个节点都是一个ziplist。</p>
+<p>  即，redis中的list，将双向链表与ziplist相结合。这样不仅满足了插入和删除的性能，并且不会浪费太多空间。因为，我们只有每个ziplist的首尾才需要指针。这样可以节约因为指针造成的空间浪费。</p>
+<h3 id="2-3-应用场景"><a href="#2-3-应用场景" class="headerlink" title="2.3 应用场景"></a>2.3 应用场景</h3><p>  我们可以利用list的两端插入删除的特性，来作为公众号文章的推送等。我们都会在微信中关注一些公众号，公众号可以通过list为我们推送最新的文章。</p>
+<hr>
+<h2 id="3-set"><a href="#3-set" class="headerlink" title="3. set"></a>3. set</h2><p>  set和list一样可以支持 一个key对应多个value。但是set可以自动排重，其实与jdk中的还是挺像的。redis中set也是一个hash表。所以查找的速度也是非常快的。set也是无序的。</p>
+<h3 id="3-1-常用命令"><a href="#3-1-常用命令" class="headerlink" title="3.1 常用命令"></a>3.1 常用命令</h3><p>  sadd 用来添加元素到key中，smembers 取出key中的所有元素</p>
+<p>  sismembers 可以来判断集合中是否存在这个value，如果存在则返回1， 反之返回0。</p>
+<p>  spop 取出元素，与list不同的是，由于set是无序的，所以取出的元素是随机的。</p>
+<p>  sinter、sunion、sdiff 分别是两个集合的交集、并集、差集。 （差集： sdiff k1 k2, 则返回的是k1有，但是k2没有的。）</p>
+<h3 id="3-2-数据结构"><a href="#3-2-数据结构" class="headerlink" title="3.2 数据结构"></a>3.2 数据结构</h3><p>  set的数据机构是dict字典，dict使用哈希表实现的。redis中是通过一个dict字典来保存所有键值对的。因此，set的数据结构和jdk中的类似，底层实现用的是hashmap中的。</p>
+<h3 id="3-3-应用场景"><a href="#3-3-应用场景" class="headerlink" title="3.3 应用场景"></a>3.3 应用场景</h3><p>  在交集或者差集等场景下我们可以使用，比如微信朋友圈的点赞，只有相同好友才能看到。又比如通过交集，来获得微博的共同关注。利用set的无序特性，可以用来做微信的抽奖小程序。等等</p>
+<hr>
+<h2 id="4-hash"><a href="#4-hash" class="headerlink" title="4. hash"></a>4. hash</h2><p>  hash相比都熟悉，redis中的hash结构与java中的类似，通过一个key可以存储多个k-v键值对。例如我们可以用用户id作为key， 而value我们可以采用k-v键值对的形式，如 姓名：jack、年龄：12。</p>
+<h3 id="4-1-常用命令"><a href="#4-1-常用命令" class="headerlink" title="4.1 常用命令"></a>4.1 常用命令</h3><p>  其实和前面的都差不多，hash的命令都是以h开头。hset用来添加键值对，hget <key> <field> 我们可以通过key 以及对应的字段来获取 字段的数据。等等。</p>
+<h3 id="4-2-数据结构"><a href="#4-2-数据结构" class="headerlink" title="4.2 数据结构"></a>4.2 数据结构</h3><p>  hash类型主要对应的是两种数据结构：一种是前面提到的ziplist，另一种则是hash表（hashtable）。当数据较少的时候，是ziplist，当数据量增大的时候，则使用hashtable。</p>
+<h3 id="4-3-应用场景"><a href="#4-3-应用场景" class="headerlink" title="4.3 应用场景"></a>4.3 应用场景</h3><p>  我们会在网上添加自己喜欢的商品到购物车，然后最后一起付款，那么，我们可以将用户的id作为key，value可以以键值对的方式，存放每个商品的数量及价格，通过hmget可以获取所有的商品。最后得到总价。 另外，还可以作为系统中对象的存储。在电商系统中，可以存放商品的信息。</p>
+<hr>
+<h2 id="5-zset"><a href="#5-zset" class="headerlink" title="5. zset"></a>5. zset</h2><p>  zset，即sorted set。即是可以排序的set，并且不允许元素的重复。zset是给每个元素加了一个score，这个评分可以作为排序。从而来获得每个元素的次序。</p>
+<h3 id="5-1-常用命令"><a href="#5-1-常用命令" class="headerlink" title="5.1 常用命令"></a>5.1 常用命令</h3><p>  zadd <score> <value> …   我们可以在添加元素的时候给元素进行分值的设置。这是作为排序的依据。</p>
+<p>  zcount <key> min max 统计在某一分数区间内，元素的个数。</p>
+<p> 等等。</p>
+<h3 id="5-2-数据结构"><a href="#5-2-数据结构" class="headerlink" title="5.2 数据结构"></a>5.2 数据结构</h3><p>  zset底层使用了两个数据结构：</p>
+<p>  （1）hash，hash的作用就是关联元素value和权重score，保障元素value的唯一性，可以通过元素value找到相应的score值。</p>
+<p>（2）跳跃表，跳跃表的目的在于给元素value排序，根据score的范围获取元素列表。</p>
+<h4 id="跳跃表"><a href="#跳跃表" class="headerlink" title="跳跃表"></a>跳跃表</h4><p>1、简介</p>
+<p>​    有序集合在生活中比较常见，例如根据成绩对学生排名，根据得分对玩家排名等。对于有序集合的底层实现，可以用数组、平衡树、链表等。数组不便元素的插入、删除；平衡树或红黑树虽然效率高但结构复杂；链表查询需要遍历所有效率低。Redis采用的是跳跃表。跳跃表效率堪比红黑树，实现远比红黑树简单。</p>
+<p>2、实例</p>
+<p>​    对比有序链表和跳跃表，从链表中查询出51</p>
+<p>（1） 有序链表</p>
+<p> <img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/redis%E7%9A%84%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/wps1.jpg" alt="链表"></p>
+<p>要查找值为51的元素，需要从第一个元素开始依次查找、比较才能找到。共需要6次比较。</p>
+<p>（2） 跳跃表</p>
+<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/redis%E7%9A%84%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/wps2.jpg" alt="跳跃表"> </p>
+<p>从第2层开始，1节点比51节点小，向后比较。</p>
+<p>21节点比51节点小，继续向后比较，后面就是NULL了，所以从21节点向下到第1层</p>
+<p>在第1层，41节点比51节点小，继续向后，61节点比51节点大，所以从41向下</p>
+<p>在第0层，51节点为要查找的节点，节点被找到，共查找4次。</p>
+<p>从此可以看出跳跃表比有序链表效率要高</p>
+<h3 id="5-3-使用场景"><a href="#5-3-使用场景" class="headerlink" title="5.3 使用场景"></a>5.3 使用场景</h3><p>  根据分数这一特点，不难看出，其实我们在直播打赏榜，微博热搜等排行榜中都可以使用。</p>
+<hr>
+<h3 id="6-bitmap"><a href="#6-bitmap" class="headerlink" title="6.bitmap"></a>6.bitmap</h3><p>  除了常见的五种数据类型，其实redis中还有三种数据类型，即bitmap、hyperloglog、geospatial。这里只说明bitmap。</p>
+<p>  bitmap，翻译过来就是位图，即其存储的是连续的二进制数字，也就是0和1，我们只需要一个bit，即位来表示某一事物的状态。而key就是这个事物。这种数据结构可以节约很大部分的空间，因为，我们可以用1bit来表示一个事物的状态。</p>
+<p>  bitmap 常用的指令有 setbit key offset 0/1  返回的是key中偏移量的值（即0或者1）。</p>
+<p>  getbit key offset 查询key中该偏移量是否被访问过</p>
+<p>  我们可以使用bitmap来存储用户的状态，用户的行为分析，可以把用户喜爱的东西记录下来，即设置为1。 另外我们可以以时间为key 用户的id为offset， 来记录活跃用户。等等。</p>
+<p>  另外，bitmap有一个应用很重要，那就是布隆过滤器。</p>
+<p>  在redis中，我们会遇到缓存穿透的问题。缓存穿透是在一定时间内，有大量的请求来访问一个不存在的key，导致redis缓存不起作用，大量请求到达数据库，导致数据库崩溃。 我们则可以使用布隆过滤器先对请求进行拦截和筛选。</p>
+<p>  布隆过滤器，通过hash运算和一个bitmap。我们可以预先记录海量数据，当请求发送过来时，布隆过滤器会对用户传过来的key进行hash运算，并在bitmap上找到对应的下标。并查询出是否存在（判断存不存在，可以根据该下标对应的值是0还是1），当该key在bitmap中存在时，才可以访问redis，或者则直接返回。</p>
+<p>  因此，布隆过滤器可以很好的预防redis缓存穿透的问题，也是bitmap的应用。</p>
+
+    </div>
+
+    
+    
+    
+
+      <div>
+        
+          <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+
+        
+      </div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/redis/" rel="tag"># redis</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/09/29/%E4%B8%80%E8%87%B4%E6%80%A7%E5%93%88%E5%B8%8C/" rel="prev" title="一致性哈希">
+      <i class="fa fa-chevron-left"></i> 一致性哈希
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/10/09/redis%E7%9A%84%E8%BF%87%E6%9C%9F%E5%88%A0%E9%99%A4%E7%AD%96%E7%95%A5%E5%8F%8A%E6%B7%98%E6%B1%B0%E6%9C%BA%E5%88%B6/" rel="next" title="redis的过期删除策略及淘汰机制">
+      redis的过期删除策略及淘汰机制 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%BF%B0"><span class="nav-text">前述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-String"><span class="nav-text">1. String</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-string%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="nav-text">1.1 string常用命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-string%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-text">1.2 string数据结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-text">1.3 应用场景</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-list"><span class="nav-text">2. list</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="nav-text">2.1 常用命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-text">2.2 数据结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-text">2.3 应用场景</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-set"><span class="nav-text">3. set</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="nav-text">3.1 常用命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-text">3.2 数据结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-text">3.3 应用场景</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-hash"><span class="nav-text">4. hash</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="nav-text">4.1 常用命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-text">4.2 数据结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-text">4.3 应用场景</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-zset"><span class="nav-text">5. zset</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="nav-text">5.1 常用命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-text">5.2 数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B7%B3%E8%B7%83%E8%A1%A8"><span class="nav-text">跳跃表</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-text">5.3 使用场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-bitmap"><span class="nav-text">6.bitmap</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="swaggyW"
+      src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
+  <p class="site-author-name" itemprop="name">swaggyW</p>
+  <div class="site-description" itemprop="description">我这双眼，又能看清什么呢</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Alwaysbryant" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Alwaysbryant" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        <!--
+
+-->
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">swaggyW</span>
+</div>
+
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+-->
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="/js/ribbon.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+  <script defer src="//cdn.jsdelivr.net/gh/theme-next/theme-next-three@1/three.min.js"></script>
+    <script defer src="//cdn.jsdelivr.net/gh/theme-next/theme-next-three@1/canvas_sphere.min.js"></script>
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+
+
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/fireworks.js"></script>
+
+
+
+</body>
+</html>
