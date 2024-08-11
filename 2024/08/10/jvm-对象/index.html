@@ -20,24 +20,20 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="舒芙蕾和妈妈一起去医院洗澡。。 果然是母女俩。。">
+  <meta name="description" content="对象Hotspot虚拟机在Java堆中对象分配、布局和访问的全过程。 对象的创建1.类加载当Java虚拟机遇到new指令时，就会去常量池中查找是否存在该对象的类的引用，检查类是否已经被加载、解析和初始化过。如果没有，就会执行类加载的过程。 2.内存分配对象所需要的内存大小在类加载完成后就确定下来了。对象内存分配是从java堆中划分一块空间给对象。 内存的分配方式 指针碰撞（Bump The Poi">
 <meta property="og:type" content="article">
-<meta property="og:title" content="life01">
-<meta property="og:url" content="http://example.com/2021/01/12/life01/index.html">
+<meta property="og:title" content="jvm-对象">
+<meta property="og:url" content="http://example.com/2024/08/10/jvm-%E5%AF%B9%E8%B1%A1/index.html">
 <meta property="og:site_name" content="swaggyW&#39;s Blog">
-<meta property="og:description" content="舒芙蕾和妈妈一起去医院洗澡。。 果然是母女俩。。">
+<meta property="og:description" content="对象Hotspot虚拟机在Java堆中对象分配、布局和访问的全过程。 对象的创建1.类加载当Java虚拟机遇到new指令时，就会去常量池中查找是否存在该对象的类的引用，检查类是否已经被加载、解析和初始化过。如果没有，就会执行类加载的过程。 2.内存分配对象所需要的内存大小在类加载完成后就确定下来了。对象内存分配是从java堆中划分一块空间给对象。 内存的分配方式 指针碰撞（Bump The Poi">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/cat/twocats.jpg">
-<meta property="og:image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/cat/twocats1.jpg">
-<meta property="og:image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/cat/twocats2.jpg">
-<meta property="article:published_time" content="2021-01-12T14:18:00.000Z">
-<meta property="article:modified_time" content="2021-10-12T14:21:08.000Z">
+<meta property="article:published_time" content="2024-08-10T14:43:32.000Z">
+<meta property="article:modified_time" content="2024-08-11T07:05:10.617Z">
 <meta property="article:author" content="swaggyW">
-<meta property="article:tag" content="cat">
+<meta property="article:tag" content="jvm">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/cat/twocats.jpg">
 
-<link rel="canonical" href="http://example.com/2021/01/12/life01/">
+<link rel="canonical" href="http://example.com/2024/08/10/jvm-%E5%AF%B9%E8%B1%A1/">
 
 
 <script id="page-configurations">
@@ -50,7 +46,7 @@
   };
 </script>
 
-  <title>life01 | swaggyW's Blog</title>
+  <title>jvm-对象 | swaggyW's Blog</title>
   
 
 
@@ -174,7 +170,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/12/life01/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/08/10/jvm-%E5%AF%B9%E8%B1%A1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
@@ -187,7 +183,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          life01
+          jvm-对象
         </h1>
 
         <div class="post-meta">
@@ -197,14 +193,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-01-12 22:18:00" itemprop="dateCreated datePublished" datetime="2021-01-12T22:18:00+08:00">2021-01-12</time>
+              <time title="创建时间：2024-08-10 22:43:32" itemprop="dateCreated datePublished" datetime="2024-08-10T22:43:32+08:00">2024-08-10</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-10-12 22:21:08" itemprop="dateModified" datetime="2021-10-12T22:21:08+08:00">2021-10-12</time>
+                <time title="修改时间：2024-08-11 15:05:10" itemprop="dateModified" datetime="2024-08-11T15:05:10+08:00">2024-08-11</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -212,7 +208,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%8C%AB/" itemprop="url" rel="index"><span itemprop="name">猫</span></a>
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3JVM%E8%99%9A%E6%8B%9F%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">学习笔记-深入理解JVM虚拟机</span></a>
                 </span>
             </span>
 
@@ -234,13 +230,38 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>舒芙蕾和妈妈一起去医院洗澡。。</p>
-<p>果然是母女俩。。</p>
-<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/cat/twocats.jpg" alt="cat"></p>
-<hr>
-<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/cat/twocats1.jpg" alt="cat"></p>
-<hr>
-<p><img src="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/cat/twocats2.jpg" alt="cat"></p>
+        <h3 id="对象"><a href="#对象" class="headerlink" title="对象"></a>对象</h3><p>Hotspot虚拟机在Java堆中对象分配、布局和访问的全过程。</p>
+<h4 id="对象的创建"><a href="#对象的创建" class="headerlink" title="对象的创建"></a>对象的创建</h4><h5 id="1-类加载"><a href="#1-类加载" class="headerlink" title="1.类加载"></a>1.类加载</h5><p>当Java虚拟机遇到<code>new</code>指令时，就会去常量池中查找是否存在该对象的类的引用，检查类是否已经被加载、解析和初始化过。如果没有，就会执行类加载的过程。</p>
+<h5 id="2-内存分配"><a href="#2-内存分配" class="headerlink" title="2.内存分配"></a>2.内存分配</h5><p>对象所需要的内存大小在类加载完成后就确定下来了。对象内存分配是从java堆中划分一块空间给对象。</p>
+<h6 id="内存的分配方式"><a href="#内存的分配方式" class="headerlink" title="内存的分配方式"></a>内存的分配方式</h6><ul>
+<li>指针碰撞（<code>Bump The Pointer</code>）：如果Java堆中，已经使用的内存在一边，空闲的内存在另一边，即Java堆中的内存是十分规整的，则通过一个指针指向两者的分界处，当完成内存分配后，指针往空闲空间那边移动对应的距离。</li>
+<li>空闲列表（<code>Free List</code>）：通过一个列表来维护空闲的内存空间。</li>
+</ul>
+<p>具体的分配方式如上所述，其实是取决于内存空间是否是规整的，内存空间是否规整那就取决于垃圾回收算法了。</p>
+<h6 id="线程安全问题"><a href="#线程安全问题" class="headerlink" title="线程安全问题"></a>线程安全问题</h6><p>对象的创建十分频繁，指针的移动如何保证线程安全问题。</p>
+<ul>
+<li>同步处理：对内存空间的分配进行同步处理，HotSpot虚拟机底层使用的是CAS和失败重试来保证原子性。</li>
+<li>本地线程缓冲（<code>Thread Local Allocation Buffer， TLAB</code>）：给每个线程预先分配一小块内存，用完了在通过同步操作来获取。通过配置参数<code>-XX:+/-UseTLAB</code>来设定。</li>
+</ul>
+<h5 id="3-初始化"><a href="#3-初始化" class="headerlink" title="3.初始化"></a>3.初始化</h5><p>完成内存分配后，虚拟机会对对象的所有属性初始化为零值。这估计也是Java对象的属性字段不用初始化就能使用的原因。</p>
+<h5 id="4-对象的信息标记"><a href="#4-对象的信息标记" class="headerlink" title="4.对象的信息标记"></a>4.对象的信息标记</h5><p>这一步就相当于确定对象的身份。包括这个对象属于那个类、类的元数据信息、对象的HashCode、对象的GC年龄。而这些信息被放入了<strong>对象头（<code>Object Header</code>）</strong>中，根据当前状态不同，会有不同的设置。</p>
+<h5 id="4-构造器"><a href="#4-构造器" class="headerlink" title="4.构造器"></a>4.构造器</h5><p>执行init方法，调用构造器来创建对象。</p>
+<h4 id="对象的内存布局"><a href="#对象的内存布局" class="headerlink" title="对象的内存布局"></a>对象的内存布局</h4><p><em>对象由三部分组成：对象头（<code>Object Header</code>）、实例数据（<code>Instance Data</code>）、对齐填充（<code>Padding</code>）</em>。</p>
+<h6 id="1-对象头"><a href="#1-对象头" class="headerlink" title="1.对象头"></a>1.对象头</h6><p>对象头包括两类信息：</p>
+<ul>
+<li>自己从哪来：类型指针，这个指针指向了对象的类型元数据，就是我属于那个类的实例。</li>
+<li>运行时所需要的数据：哈希码、GC年龄、锁状态标志、线程持有的锁、偏向线程ID等。这部分长度在32位和64位虚拟机中分别为32bit和64bit，称为**<code>Mark Word</code>**。<code>Mark Word</code>被设计成动态定义的数据结构，在极小的空间存储更多的数据。使用对象当前的状态来复用存储空间。例如，在32位虚拟机中，<code>Mark Word</code>大小位32bit，25个bit来存储对象的hashCode，4个bit来存储GC分代年龄，2个bit来存储锁的标志位，还有1个bit固定为0。</li>
+</ul>
+<h6 id="2-实例数据"><a href="#2-实例数据" class="headerlink" title="2.实例数据"></a>2.实例数据</h6><p>存储的是真正有效的数据信息，我们在对象中定义的各种类型的字段。<em>这部分的存储顺序会 受到虚拟机分配策略参数（-XX：FieldsAllocationStyle参数）和字段在Java源码中定义顺序的影响。 HotSpot虚拟机默认的分配顺序为<code>longs/doubles</code>、<code>ints</code>、<code>shorts/chars</code>、<code>bytes/booleans</code>、<code>oops（Ordinary Object Pointers，OOPs）</code>，从以上默认的分配策略中可以看到，相同宽度的字段总是被分配到一起存 放，在满足这个前提条件的情况下，在父类中定义的变量会出现在子类之前。如果HotSpot虚拟机的 <code>+XX：CompactFields</code>参数值为true（默认就为true），那子类之中较窄的变量也允许插入父类变量的空 隙之中，以节省出一点点空间。</em></p>
+<h6 id="3-对齐填充"><a href="#3-对齐填充" class="headerlink" title="3.对齐填充"></a>3.对齐填充</h6><p>因为HotSpot虚拟机要求对象的起始内存地址必须是8的整数倍，所以当对象的实例数据没有对齐的话，就会填充来保证。</p>
+<h4 id="对象的访问定位"><a href="#对象的访问定位" class="headerlink" title="对象的访问定位"></a>对象的访问定位</h4><p>Java程序通过栈上的<code>Reference</code>来操作对象的具体对象。访问具体对象的方式有两种：</p>
+<ul>
+<li>句柄池：堆中开辟了一块空间来维护句柄，句柄存储了具体对象的地址。<code>Reference</code>通过访问句柄池来获取具体对象的地址。</li>
+<li>直接指针：<code>Reference</code>存储的是对象的地址，这种方式不需要中转。</li>
+</ul>
+<p><strong>优点对比</strong></p>
+<p>分析来看，在垃圾回收场景中，对象的地址可能会变，前者<code>Reference</code>存储的是句柄地址，会更加稳定。后者不需要中转速度更快。HotSpot使用的是后者。</p>
+<p>OOM异常模拟试过了就不记录了。。。。。。。。。。。。。。。。。。。。。。。。</p>
 
     </div>
 
@@ -262,7 +283,7 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/cat/" rel="tag"># cat</a>
+              <a href="/tags/jvm/" rel="tag"># jvm</a>
           </div>
 
         
@@ -271,13 +292,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/09/18/life/" rel="prev" title="life">
-      <i class="fa fa-chevron-left"></i> life
+    <a href="/2024/07/27/Java%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA%E5%9F%9F/" rel="prev" title="jvm-运行时数据区域">
+      <i class="fa fa-chevron-left"></i> jvm-运行时数据区域
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2021/03/11/leetcode01/" rel="next" title="leetcode01">
-      leetcode01 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -336,6 +354,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1"><span class="nav-text">对象</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%88%9B%E5%BB%BA"><span class="nav-text">对象的创建</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-%E7%B1%BB%E5%8A%A0%E8%BD%BD"><span class="nav-text">1.类加载</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D"><span class="nav-text">2.内存分配</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E7%9A%84%E5%88%86%E9%85%8D%E6%96%B9%E5%BC%8F"><span class="nav-text">内存的分配方式</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98"><span class="nav-text">线程安全问题</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-text">3.初始化</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-%E5%AF%B9%E8%B1%A1%E7%9A%84%E4%BF%A1%E6%81%AF%E6%A0%87%E8%AE%B0"><span class="nav-text">4.对象的信息标记</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-%E6%9E%84%E9%80%A0%E5%99%A8"><span class="nav-text">4.构造器</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80"><span class="nav-text">对象的内存布局</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#1-%E5%AF%B9%E8%B1%A1%E5%A4%B4"><span class="nav-text">1.对象头</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#2-%E5%AE%9E%E4%BE%8B%E6%95%B0%E6%8D%AE"><span class="nav-text">2.实例数据</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#3-%E5%AF%B9%E9%BD%90%E5%A1%AB%E5%85%85"><span class="nav-text">3.对齐填充</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E7%9A%84%E8%AE%BF%E9%97%AE%E5%AE%9A%E4%BD%8D"><span class="nav-text">对象的访问定位</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
