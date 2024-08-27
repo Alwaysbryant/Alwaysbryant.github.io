@@ -123,17 +123,17 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">17</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">18</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">14</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">15</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">43</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">44</span></a>
 
   </li>
   </ul>
@@ -162,6 +162,101 @@
 
           <div class="content index posts-expand">
             
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/08/27/Springboot3%E6%95%B4%E5%90%88elasticsearch8-0-x%EF%BC%88%E4%B8%8A%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
+      <meta itemprop="name" content="swaggyW">
+      <meta itemprop="description" content="我这双眼，又能看清什么呢">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="swaggyW's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/08/27/Springboot3%E6%95%B4%E5%90%88elasticsearch8-0-x%EF%BC%88%E4%B8%8A%EF%BC%89/" class="post-title-link" itemprop="url">Springboot3整合elasticsearch8.0.x（上）</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2024-08-27 22:47:20" itemprop="dateCreated datePublished" datetime="2024-08-27T22:47:20+08:00">2024-08-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-08-28 00:28:47" itemprop="dateModified" datetime="2024-08-28T00:28:47+08:00">2024-08-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/elasticsearch/" itemprop="url" rel="index"><span itemprop="name">elasticsearch</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/elasticsearch/springboot/" itemprop="url" rel="index"><span itemprop="name">springboot</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>在使用<code>springboot2.0.x</code>时，整合<code>elasticsearch</code>，更多的是使用es提供的高级客户端<code>RestHighLevelClient</code>。在<code>elasticsearch8</code>后好多都被标注为过时了。</p>
+<p>本文主要基于<code>Springboot3</code>，对<code>Elasticsearch</code>的索引、文档进行操作。版本信息如下：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">JDK版本：</span> <span class="string">JDK17</span></span><br><span class="line"><span class="attr">Springboot版本：3.0.2</span></span><br><span class="line"><span class="attr">Elasticsearch：8.5.3</span></span><br></pre></td></tr></table></figure>
+
+<p><em>PS： <code>springboot</code>和<code>Elasticsearch</code>的版本对应关系参考Spring官网-<a target="_blank" rel="noopener" href="https://docs.spring.io/spring-data/elasticsearch/reference/elasticsearch/versions.html">https://docs.spring.io/spring-data/elasticsearch/reference/elasticsearch/versions.html</a></em></p>
+<h3 id="前置工作"><a href="#前置工作" class="headerlink" title="前置工作"></a>前置工作</h3><ul>
+<li>安装<code>Elasticsearch</code> </li>
+</ul>
+<p>使用的是docker镜像，拉取镜像： <code>docker pull elasticsearch:8.5.3</code></p>
+<p>启动<code>Elasticsearch</code>，将配置文件和插件目录都挂载到外部文件夹：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">docker run --name elasticsearch --restart=always --privileged -p 9200:9200 -p 9300:9300 \</span><br><span class="line">-e <span class="string">&quot;discovery.type=single-node&quot;</span> \</span><br><span class="line">-e ES_JAVA_OPTS=<span class="string">&quot;-Xms64m -Xmx128m&quot;</span> \</span><br><span class="line">-v /mydata/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml \</span><br><span class="line">-v /mydata/elasticsearch/data:/usr/share/elasticsearch/data \</span><br><span class="line">-v /mydata/elasticsearch/plugins:/usr/share/elasticsearch/plugins \</span><br><span class="line">-d docker.elastic.co/elasticsearch/elasticsearch:8.5.3</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/08/27/Springboot3%E6%95%B4%E5%90%88elasticsearch8-0-x%EF%BC%88%E4%B8%8A%EF%BC%89/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
       
   
   
@@ -926,97 +1021,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/25/easyexcel%E4%BD%BF%E7%94%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://edu-5858.oss-cn-guangzhou.aliyuncs.com/blog/avatar/mycat.JPG">
-      <meta itemprop="name" content="swaggyW">
-      <meta itemprop="description" content="我这双眼，又能看清什么呢">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="swaggyW's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/11/25/easyexcel%E4%BD%BF%E7%94%A8/" class="post-title-link" itemprop="url">easyexcel使用</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2022-11-25 21:08:01 / 修改时间：21:11:54" itemprop="dateCreated datePublished" datetime="2022-11-25T21:08:01+08:00">2022-11-25</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">常用工具</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="easyexcel的使用"><a href="#easyexcel的使用" class="headerlink" title="easyexcel的使用"></a>easyexcel的使用</h2><p>easyescel官方文档： </p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://easyexcel.opensource.alibaba.com/docs/current/quickstart/read#%E5%A4%9A%E8%A1%8C%E5%A4%B4</span><br></pre></td></tr></table></figure>
-
-<p>依赖</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.alibaba<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>easyexcel<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.2.3<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="导入excel"><a href="#导入excel" class="headerlink" title="导入excel"></a>导入excel</h3><ol>
-<li>配置监听器</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.alibaba.excel.context.AnalysisContext;</span><br><span class="line"><span class="keyword">import</span> com.alibaba.excel.event.AnalysisEventListener;</span><br><span class="line"><span class="keyword">import</span> com.cloudwise.entity.VO.AuthManageExcelVO;</span><br><span class="line"><span class="keyword">import</span> com.cloudwise.entity.VO.AuthManageVO;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.LinkedHashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 填写具体类的描述</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>: turbo.wu</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span>: 2022-11-15 17:32</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">EasyExcelListener</span> <span class="keyword">extends</span> <span class="title">AnalysisEventListener</span> </span>&#123;</span><br><span class="line">     <span class="comment">// 指定读取的数据</span></span><br><span class="line">    <span class="keyword">private</span> List&lt;AuthManageExcelVO&gt; data = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">  *  每读取一行就会调用这个方法，</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> o 是每一行的数据，LinkHashMap key: 列号，从0开始 value: 值</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">invoke</span><span class="params">(Object o, AnalysisContext analysisContext)</span> </span>&#123;</span><br><span class="line">        System.out.println(o);</span><br><span class="line">        <span class="meta">@SuppressWarnings(&quot;unchecked&quot;)</span></span><br><span class="line">        Map&lt;Integer, String&gt; map = (LinkedHashMap&lt;Integer, String&gt;) o;</span><br><span class="line">        AuthManageExcelVO authManageExcelVO = <span class="keyword">new</span> AuthManageExcelVO();</span><br><span class="line">        <span class="comment">// 生成数据</span></span><br><span class="line">        authManageExcelVO.setUmAccountName(map.getOrDefault(<span class="number">1</span>, <span class="string">&quot;&quot;</span>));</span><br><span class="line">        authManageExcelVO.setUsername(map.getOrDefault(<span class="number">2</span>, <span class="string">&quot;&quot;</span>));</span><br><span class="line">        authManageExcelVO.setDepartmentName(map.getOrDefault(<span class="number">3</span>, <span class="string">&quot;&quot;</span>));</span><br><span class="line">        authManageExcelVO.setHrPosition(map.getOrDefault(<span class="number">4</span>, <span class="string">&quot;&quot;</span>));</span><br><span class="line">        authManageExcelVO.setDirectSuperiorsName(map.getOrDefault(<span class="number">5</span>, <span class="string">&quot;&quot;</span>));</span><br><span class="line">        authManageExcelVO.setRoleName(map.getOrDefault(<span class="number">6</span>, <span class="string">&quot;&quot;</span>));</span><br><span class="line">        authManageExcelVO.setActuatorName(map.getOrDefault(<span class="number">7</span>, <span class="string">&quot;&quot;</span>));</span><br><span class="line">        authManageExcelVO.setExpiredDate(map.getOrDefault(<span class="number">8</span>, <span class="string">&quot;&quot;</span>));</span><br><span class="line">        authManageExcelVO.setApplyExplain(map.getOrDefault(<span class="number">9</span>, <span class="string">&quot;&quot;</span>));</span><br><span class="line">        <span class="keyword">this</span>.data.add(authManageExcelVO);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doAfterAllAnalysed</span><span class="params">(AnalysisContext analysisContext)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setData</span><span class="params">(List&lt;AuthManageExcelVO&gt; data)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.data = data;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;AuthManageExcelVO&gt; <span class="title">getData</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> data;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ol start="2">
-<li>使用EasyExcelFactory读取excel文件</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">importExcel</span><span class="params">(MultipartFile file)</span> </span>&#123;</span><br><span class="line">    Inputstream inputStream = file.getInputStream();</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 读取excel数据</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">  <span class="comment">// 创建监听器对象</span></span><br><span class="line">    EasyExcelListener listener = <span class="keyword">new</span> EasyExcelListener();</span><br><span class="line">  <span class="comment">// 构建easyExcel读对象。 headRowNumber，指定从excel文件中的哪一行开始读，从0开始，这里是8，则是从第9行开始读起</span></span><br><span class="line">    ExcelReader excelReader = EasyExcelFactory.read(inputStream, listener).headRowNumber(<span class="number">8</span>).build();</span><br><span class="line">  <span class="comment">// 读取excel的sheet， 可以传入多个sheet， 使用new ReadSheet(&quot;传入sheetNo，从0开始&quot;，@Nullable(&quot;可以不传&quot;) &quot;传入sheetName&quot;)</span></span><br><span class="line">    excelReader.read(<span class="keyword">new</span> ReadSheet(<span class="number">0</span>));</span><br><span class="line">  <span class="comment">// 从监听器中获取暂存的数据, 这里数据的数据类型由你自己指定</span></span><br><span class="line">    List&lt;AuthManageExcelVO&gt; data = listener.getData();</span><br><span class="line">    System.out.println(data);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/11/25/easyexcel%E4%BD%BF%E7%94%A8/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1088,20 +1092,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-count">44</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-count">15</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-count">18</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
